@@ -1,0 +1,1473 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, viewport-fit=cover">
+<title>MoBoOk — نسخة تجريبية</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lalezar&family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* ============================================================
+   MoBoOk — Design Tokens
+   متوافق مع MoBoOk_VisualIdentity.html (نفس نظام الألوان الرسمي)
+   ============================================================ */
+
+:root{
+  /* الألوان الأساسية للمراحل الثلاث */
+  --city:#0066CC;       /* المدينة الفاضلة */
+  --coupling:#7C3AED;   /* الاقتران */
+  --utopia:#10B981;     /* يوتوبيا */
+
+  --success:#10B981;
+  --error:#EF4444;
+  --warning:#F59E0B;
+  --info:#3B82F6;
+
+  /* ثيم داكن (افتراضي) */
+  --bg:#0F1117;
+  --surface:#1C2128;
+  --surface-soft:#252D37;
+  --card:rgba(28,33,40,0.72);
+  --border:rgba(255,255,255,0.08);
+  --text:#F6F4F0;
+  --text-dim:#8B93A1;
+
+  /* مسافات */
+  --space-xs:4px;
+  --space-sm:8px;
+  --space-md:16px;
+  --space-lg:24px;
+  --space-xl:32px;
+
+  /* انحناءات */
+  --radius-sm:8px;
+  --radius-md:14px;
+  --radius-lg:20px;
+  --radius-full:999px;
+
+  /* خطوط */
+  --font-display:'Lalezar','IBM Plex Sans Arabic',sans-serif;
+  --font-body:'IBM Plex Sans Arabic',Tahoma,sans-serif;
+}
+
+/* ثيم فاتح — يتفعّل عبر data-theme="light" على <html> */
+[data-theme="light"]{
+  --bg:#F6F4F0;
+  --surface:#FFFFFF;
+  --surface-soft:#EFECE6;
+  --card:rgba(255,255,255,0.78);
+  --border:rgba(0,0,0,0.08);
+  --text:#15171C;
+  --text-dim:#6B7280;
+}
+
+
+/* ============================================================
+   MoBoOk — Layout عام + App Shell
+   ============================================================ */
+
+*,*::before,*::after{box-sizing:border-box;}
+html,body{margin:0;padding:0;height:100%;}
+
+body{
+  background:var(--bg);
+  color:var(--text);
+  font-family:var(--font-body);
+  -webkit-tap-highlight-color:transparent;
+  overscroll-behavior:none;
+  transition:background .2s, color .2s;
+}
+
+#app{
+  max-width:480px;
+  margin:0 auto;
+  min-height:100vh;
+  display:flex;
+  flex-direction:column;
+  position:relative;
+  background:var(--bg);
+}
+
+.hidden{display:none !important;}
+
+/* ---------- الهيدر الرئيسي ---------- */
+.app-header{
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  padding:18px 20px 12px;
+  position:sticky;
+  top:0;
+  background:var(--bg);
+  z-index:10;
+  border-bottom:1px solid var(--border);
+}
+.app-logo{font-family:var(--font-display);font-size:24px;}
+.app-header-sub{font-size:11px;color:var(--text-dim);margin-top:2px;}
+
+/* ---------- هيدر الرجوع (للشاشات الفرعية) ---------- */
+.back-header{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  padding:16px 20px;
+  position:sticky;
+  top:0;
+  background:var(--bg);
+  z-index:10;
+  border-bottom:1px solid var(--border);
+}
+.back-header button{
+  background:none;border:none;color:var(--text);font-size:20px;cursor:pointer;
+  width:32px;height:32px;display:flex;align-items:center;justify-content:center;
+  flex-shrink:0;
+}
+.back-header span{font-weight:700;font-size:14.5px;}
+
+/* ---------- منطقة المحتوى ---------- */
+main#main{
+  flex:1;
+  overflow-y:auto;
+  padding:16px 16px 92px;
+  -webkit-overflow-scrolling:touch;
+}
+main#main::-webkit-scrollbar{display:none;}
+
+/* ---------- شريط التنقل السفلي ---------- */
+.bottom-nav{
+  position:fixed;
+  bottom:0;left:0;right:0;
+  max-width:480px;
+  margin:0 auto;
+  display:flex;
+  background:var(--surface);
+  border-top:1px solid var(--border);
+  padding:8px 0 max(8px, env(safe-area-inset-bottom));
+  z-index:20;
+}
+.bottom-nav button{
+  flex:1;
+  display:flex;flex-direction:column;align-items:center;gap:3px;
+  background:none;border:none;color:var(--text-dim);
+  font-size:18px;padding:6px 0;cursor:pointer;
+}
+.bottom-nav button span{font-size:10.5px;font-family:var(--font-body);}
+.bottom-nav button.active{color:var(--city);}
+
+/* ---------- زر النشر العائم ---------- */
+.fab{
+  position:fixed;
+  left:20px;
+  bottom:80px;
+  width:54px;height:54px;
+  border-radius:50%;
+  background:var(--city);
+  color:#fff;
+  border:none;
+  font-size:26px;
+  line-height:1;
+  box-shadow:0 10px 24px -6px rgba(0,102,204,0.6);
+  z-index:25;
+  cursor:pointer;
+}
+
+/* ---------- تنبيه عابر (Toast) ---------- */
+.toast{
+  position:fixed;
+  bottom:92px;
+  left:50%;
+  transform:translateX(-50%) translateY(20px);
+  background:var(--surface-soft);
+  color:var(--text);
+  padding:10px 18px;
+  border-radius:var(--radius-full);
+  font-size:12.5px;
+  box-shadow:0 8px 24px rgba(0,0,0,0.3);
+  z-index:50;
+  opacity:0;
+  transition:opacity .25s, transform .25s;
+  max-width:85%;
+  text-align:center;
+}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+
+/* ---------- شاشة الترحيب ---------- */
+.overlay{
+  position:fixed;inset:0;
+  background:rgba(0,0,0,0.6);
+  display:flex;align-items:center;justify-content:center;
+  z-index:100;
+  padding:24px;
+}
+.overlay-card{
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:var(--radius-lg);
+  padding:28px 24px;
+  max-width:340px;
+  text-align:center;
+}
+.overlay-card h1{font-family:var(--font-display);font-size:30px;margin:0 0 6px;}
+.overlay-card h2{font-size:14.5px;color:var(--text-dim);margin:0 0 16px;font-weight:600;}
+.overlay-card p{font-size:13px;color:var(--text-dim);line-height:1.8;margin:0 0 20px;}
+
+/* ---------- أدوات عامة ---------- */
+.muted{color:var(--text-dim);font-size:12.5px;}
+.section-label{font-size:13px;color:var(--text-dim);margin:18px 0 10px;font-weight:700;}
+.empty-state{
+  text-align:center;color:var(--text-dim);font-size:13px;
+  padding:36px 10px;
+  line-height:1.8;
+}
+
+
+/* ============================================================
+   MoBoOk — تصميم العناصر (Components)
+   ============================================================ */
+
+/* علامة الصوت المجهول — حلقة بدل أي صورة شخصية */
+.vmark{
+  display:inline-block;
+  width:13px;height:13px;
+  border:2px solid var(--city);
+  border-radius:50%;
+  position:relative;
+  margin-left:4px;
+  vertical-align:middle;
+  flex-shrink:0;
+}
+.vmark::after{
+  content:"";
+  position:absolute;
+  inset:3px;
+  border-radius:50%;
+  background:var(--city);
+}
+
+/* كروت زجاجية (Glassmorphic) */
+.card{
+  background:var(--card);
+  backdrop-filter:blur(14px);
+  -webkit-backdrop-filter:blur(14px);
+  border:1px solid var(--border);
+  border-radius:var(--radius-md);
+  padding:14px;
+  margin-bottom:12px;
+  box-shadow:0 4px 18px rgba(0,0,0,0.18);
+}
+.card.clickable{cursor:pointer;}
+
+/* ---------- المنشورات ---------- */
+.feed-tagline{font-size:12px;color:var(--text-dim);margin-bottom:14px;}
+.post-card{cursor:pointer;}
+.post-head{display:flex;align-items:center;gap:8px;margin-bottom:8px;}
+.voice-tag{font-weight:700;font-size:13.5px;display:flex;align-items:center;}
+.time{font-size:11px;color:var(--text-dim);margin-right:auto;}
+.post-content{font-size:13.5px;line-height:1.75;margin-bottom:10px;white-space:pre-wrap;}
+.post-actions{display:flex;gap:14px;font-size:11.5px;color:var(--text-dim);flex-wrap:wrap;align-items:center;}
+.post-actions .supported{color:var(--warning);font-weight:700;}
+.pending-flag{color:var(--warning);}
+
+/* تعليقات في الانتظار */
+.pending-comment{border-right:3px solid var(--warning);}
+.pending-label{font-size:10px;color:var(--warning);font-weight:700;margin-bottom:6px;letter-spacing:.02em;}
+.row-actions{display:flex;gap:8px;margin-top:10px;}
+
+.comment-card b{font-size:12.5px;}
+.comment-card p{font-size:12.5px;margin-top:4px;line-height:1.65;}
+
+.comment-input-row{
+  display:flex;gap:8px;
+  position:sticky;bottom:0;
+  background:var(--bg);
+  padding:10px 0 2px;
+}
+.comment-input-row input{
+  flex:1;
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:var(--radius-full);
+  padding:10px 16px;
+  color:var(--text);
+  font-family:var(--font-body);
+  font-size:13px;
+  min-width:0;
+}
+.comment-input-row input:focus{outline:1.5px solid var(--city);}
+
+/* ---------- أزرار ---------- */
+.btn{
+  border:none;border-radius:var(--radius-md);
+  padding:12px 18px;font-size:13.5px;font-weight:700;
+  cursor:pointer;font-family:var(--font-body);
+}
+.btn-block{width:100%;display:block;margin-bottom:8px;}
+.btn-sm{padding:7px 12px;font-size:11.5px;border-radius:var(--radius-sm);}
+.btn-primary{background:var(--city);color:#fff;}
+.btn-secondary{background:transparent;border:1px solid var(--border);color:var(--text);}
+.btn-success{background:var(--success);color:#fff;}
+.btn-ghost{background:var(--surface-soft);color:var(--text-dim);}
+.btn-coupling{background:var(--coupling);color:#fff;}
+.btn-utopia{background:var(--utopia);color:#fff;}
+
+/* ---------- نشر منشور ---------- */
+.post-textarea{
+  width:100%;min-height:140px;
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:var(--radius-md);
+  padding:14px;color:var(--text);
+  font-family:var(--font-body);font-size:13.5px;
+  resize:vertical;margin-bottom:14px;
+}
+.post-textarea:focus{outline:1.5px solid var(--city);}
+
+/* ---------- تابات الاقتران ---------- */
+.tabs{display:flex;gap:8px;margin-bottom:16px;}
+.tab{
+  flex:1;background:var(--surface);border:1px solid var(--border);
+  color:var(--text-dim);border-radius:var(--radius-full);
+  padding:9px 4px;font-size:12px;font-weight:700;cursor:pointer;
+}
+.tab.active{background:var(--coupling);color:#fff;border-color:var(--coupling);}
+
+.sc-head{font-weight:700;font-size:13.5px;margin-bottom:8px;}
+.checklist{font-size:11.5px;color:var(--text-dim);line-height:1.85;margin-bottom:10px;}
+
+.trust-mini{display:flex;align-items:center;gap:6px;font-size:11px;color:var(--text-dim);margin-top:6px;}
+.dot{width:9px;height:9px;border-radius:50%;background:var(--border);flex-shrink:0;}
+.dot.on{background:var(--coupling);}
+.vs{margin:0 6px;}
+
+/* ---------- شاشة حلقات الثقة ---------- */
+.display-title{font-family:var(--font-display);font-size:21px;margin:6px 0 4px;}
+.trust-cols{display:flex;gap:10px;margin:18px 0;}
+.trust-col{flex:1;min-width:0;}
+.trust-col-title{font-size:11px;font-weight:700;color:var(--text-dim);margin-bottom:8px;}
+.trust-row{
+  display:flex;align-items:center;gap:7px;
+  background:var(--card);border:1px solid var(--border);
+  border-radius:var(--radius-md);padding:8px 9px;margin-bottom:8px;
+}
+.trust-row.open{border-color:var(--coupling);}
+.tr-num{
+  width:22px;height:22px;border-radius:50%;
+  background:var(--surface-soft);color:var(--text);
+  display:flex;align-items:center;justify-content:center;
+  font-size:10.5px;font-weight:700;flex-shrink:0;
+}
+.trust-row.open .tr-num{background:var(--coupling);color:#fff;}
+.tr-info{flex:1;min-width:0;}
+.tr-info b{font-size:10.5px;display:block;line-height:1.3;}
+.tr-info span{font-size:9px;color:var(--text-dim);}
+.tr-status{font-size:9.5px;color:var(--text-dim);white-space:nowrap;}
+.reveal-card{
+  background:linear-gradient(135deg, rgba(124,58,237,.18), rgba(16,185,129,.18));
+  border-color:var(--coupling);text-align:center;font-size:12.5px;line-height:1.8;
+}
+
+/* ---------- المحادثة ---------- */
+.chat-banner{
+  background:var(--surface-soft);color:var(--text-dim);
+  font-size:11px;text-align:center;padding:9px;
+  border-radius:var(--radius-md);margin-bottom:14px;
+}
+.chat-col{display:flex;flex-direction:column;gap:8px;margin-bottom:10px;max-height:55vh;overflow-y:auto;}
+.bubble{
+  max-width:78%;padding:10px 13px;border-radius:14px;
+  font-size:12.5px;line-height:1.65;
+}
+.bubble.them{background:var(--card);border:1px solid var(--border);align-self:flex-start;}
+.bubble.me{background:var(--city);color:#fff;align-self:flex-end;}
+
+/* ---------- يوتوبيا ---------- */
+.utopia-note{font-size:11px;color:var(--text-dim);line-height:1.7;margin-bottom:10px;}
+
+/* ---------- البروفايل والمزيد ---------- */
+.profile-head{display:flex;align-items:center;gap:14px;margin-bottom:18px;}
+.avatar-ring{
+  width:54px;height:54px;border-radius:50%;
+  border:3px solid var(--city);
+  background:var(--surface-soft);
+  flex-shrink:0;
+}
+.profile-voice{font-weight:700;font-size:15px;}
+
+.stats-grid{display:flex;gap:10px;margin-bottom:6px;}
+.stat{
+  flex:1;background:var(--card);border:1px solid var(--border);
+  border-radius:var(--radius-md);padding:12px 6px;text-align:center;
+}
+.stat b{display:block;font-size:18px;}
+.stat span{font-size:10px;color:var(--text-dim);}
+
+.settings-row{
+  display:flex;align-items:center;justify-content:space-between;
+  background:var(--card);border:1px solid var(--border);
+  border-radius:var(--radius-md);padding:12px 14px;margin-bottom:10px;
+  font-size:13px;
+}
+.switch{position:relative;width:42px;height:24px;flex-shrink:0;}
+.switch input{opacity:0;width:0;height:0;position:absolute;}
+.slider{
+  position:absolute;inset:0;background:var(--surface-soft);
+  border:1px solid var(--border);
+  border-radius:var(--radius-full);transition:.2s;cursor:pointer;
+}
+.slider::before{
+  content:"";position:absolute;width:18px;height:18px;
+  right:3px;top:2px;background:#fff;border-radius:50%;transition:.2s;
+  box-shadow:0 2px 6px rgba(0,0,0,0.3);
+}
+.switch input:checked + .slider{background:var(--city);border-color:var(--city);}
+.switch input:checked + .slider::before{transform:translateX(-18px);}
+
+.about-card b{font-size:13px;}
+.about-card p{margin-top:4px;}
+#about-details p{font-size:12px;line-height:1.8;margin-bottom:10px;}
+#about-details p:last-child{margin-bottom:0;}
+
+/* ============================================================
+   شاشات الدخول (Auth) — Splash / Sign Up / Sign In / Verify / Forgot
+   ============================================================ */
+.auth-shell{
+  max-width:480px;margin:0 auto;min-height:100vh;
+  display:flex;align-items:center;justify-content:center;
+  background:var(--bg);position:relative;padding:24px 0;
+}
+
+.splash-wrap{text-align:center;animation:authFadeIn .6s ease;}
+.splash-logo{font-family:var(--font-display);font-size:42px;}
+.splash-tagline{font-size:13px;color:var(--text-dim);margin-top:8px;}
+
+@keyframes authFadeIn{
+  from{opacity:0;transform:translateY(10px);}
+  to{opacity:1;transform:translateY(0);}
+}
+
+.auth-card{width:100%;max-width:340px;margin:0 auto;padding:0 24px;animation:authFadeIn .35s ease;}
+.auth-logo{font-family:var(--font-display);font-size:32px;text-align:center;margin-bottom:4px;}
+.auth-sub{text-align:center;color:var(--text-dim);font-size:13px;margin-bottom:22px;line-height:1.7;}
+
+.auth-input{
+  width:100%;background:var(--surface);border:1px solid var(--border);
+  border-radius:var(--radius-md);padding:13px 16px;color:var(--text);
+  font-family:var(--font-body);font-size:13.5px;margin-bottom:10px;
+}
+.auth-input:focus{outline:1.5px solid var(--city);}
+
+.auth-check{
+  display:flex;align-items:flex-start;gap:8px;font-size:11.5px;
+  color:var(--text-dim);margin:6px 0 16px;line-height:1.6;cursor:pointer;
+}
+.auth-check input{margin-top:2px;flex-shrink:0;}
+
+.auth-error{color:var(--error);font-size:11.5px;min-height:14px;margin-bottom:8px;text-align:center;}
+.auth-hint{
+  text-align:center;font-size:11.5px;color:var(--text-dim);
+  background:var(--surface-soft);border:1px solid var(--border);border-radius:var(--radius-md);
+  padding:9px;margin-bottom:14px;
+}
+.auth-switch{text-align:center;font-size:12px;color:var(--text-dim);margin-top:14px;}
+.auth-switch a{color:var(--city);cursor:pointer;font-weight:700;}
+
+
+</style>
+</head>
+<body>
+
+<div id="auth-shell" class="auth-shell hidden">
+  <div id="auth-content"></div>
+</div>
+
+<div id="app">
+
+  <div id="welcome-overlay" class="overlay hidden">
+    <div class="overlay-card">
+      <h1>MoBoOk</h1>
+      <h2>يُسمع الإنسان قبل أن يُعرف</h2>
+      <p>دي نسخة تجريبية بتعمل بالكامل على جهازك (من غير سيرفر). جرّب تنشر، تعلّق، تقترن بصوت، وتفتح حلقات الثقة. كل البيانات محفوظة محليًا بس.</p>
+      <button class="btn btn-primary btn-block" onclick="dismissWelcome()">ابدأ</button>
+    </div>
+  </div>
+
+  <div id="toast" class="toast hidden"></div>
+
+  <header id="app-header" class="app-header">
+    <span class="app-logo">MoBoOk</span>
+    <span class="app-header-sub">المدينة الفاضلة — الثقة التدريجية</span>
+  </header>
+
+  <header id="back-header" class="back-header hidden">
+    <button id="back-btn">→</button>
+    <span id="back-title"></span>
+  </header>
+
+  <main id="main">
+    <section id="screen-home" class="screen"></section>
+    <section id="screen-post-detail" class="screen hidden"></section>
+    <section id="screen-create-post" class="screen hidden"></section>
+    <section id="screen-connections" class="screen hidden"></section>
+    <section id="screen-coupling-detail" class="screen hidden"></section>
+    <section id="screen-messages" class="screen hidden"></section>
+    <section id="screen-chat" class="screen hidden"></section>
+    <section id="screen-more" class="screen hidden"></section>
+  </main>
+
+  <button id="fab" class="fab hidden">+</button>
+
+  <nav class="bottom-nav">
+    <button data-nav="home">🏠<span>الرئيسية</span></button>
+    <button data-nav="messages">💬<span>الرسائل</span></button>
+    <button data-nav="connections">👥<span>الاقتران</span></button>
+    <button data-nav="more">⚙️<span>المزيد</span></button>
+  </nav>
+
+</div>
+
+<script>
+/* ============================================================
+   MoBoOk — بيانات تجريبية (Mock Data)
+   في النسخة الحقيقية، البيانات دي تيجي من Firestore عبر
+   Cloud Functions + Security Rules، مش من ملف ثابت زي ده.
+   ============================================================ */
+
+const STORAGE_KEY = "mobook_demo_state_v1";
+
+function defaultState() {
+  return {
+    me: "#101",
+    theme: "dark",
+    onboarded: false,
+
+    /* الحساب والدخول — بريد إلكتروني فقط، بدون اسم حقيقي أو صورة */
+    auth: {
+      loggedIn: false,
+      account: null /* { email, password, voice } بعد أول تسجيل */
+    },
+
+    posts: [
+      {
+        id: "p1",
+        voice: "#128",
+        mine: false,
+        time: "منذ ١ ساعة",
+        content: "بقالي وقت بفكر في المستقبل بطريقة مختلفة. مش عارف أقول ده لحد قريب مني.",
+        supports: 14,
+        supportedByMe: false,
+        comments: [
+          { id: "c1", voice: "#390", content: "حسيت زيك تمامًا، شكرًا إنك كتبتها", status: "approved" }
+        ]
+      },
+      {
+        id: "p2",
+        voice: "#101",
+        mine: true,
+        time: "منذ ٢ ساعة",
+        content: "التعليقات المرفوضة لا تظهر لحد — بس الموافق عليها تبقى للجميع 💭",
+        supports: 6,
+        supportedByMe: false,
+        comments: [
+          { id: "c2", voice: "#742", content: "أنا حاسس نفس الحاجة. إنت في الزاوية الصح.", status: "pending" },
+          { id: "c3", voice: "#305", content: "كلامك لمسني فعلاً", status: "approved" }
+        ]
+      },
+      {
+        id: "p3",
+        voice: "#77",
+        mine: false,
+        time: "منذ ٥ ساعات",
+        content: "نفسي حد يسمعني من غير ما يحاول يعرف أنا مين بالظبط. بس عايز أعرف إن مش غريب اللي أحسه.",
+        supports: 9,
+        supportedByMe: false,
+        comments: []
+      }
+    ],
+
+    connections: {
+      suggested: [
+        { voice: "#305", sharedPosts: 3, sharedComments: 2, sharedApprovals: 2 }
+      ],
+      active: [
+        { voice: "#58", mine: [true, false, false, false], theirs: [true, false, false, false] }
+      ]
+    },
+
+    utopias: {
+      suggested: [
+        {
+          id: "u1",
+          name: "أصحاب الموجة الهادية",
+          members: [
+            { voice: "#214", approved: true },
+            { voice: "#77", approved: true },
+            { voice: "#101", approved: true },
+            { voice: "#58", approved: false }
+          ]
+        }
+      ],
+      active: []
+    },
+
+    conversations: []
+  };
+}
+
+/* وصف المستويات الأربعة — ثابت، مش جزء من الحالة المتغيّرة */
+const trustLevels = [
+  { title: "اهتمامات وأفكار عامة", desc: "ما تحب، ما تكره، أحلامك" },
+  { title: "تجارب وقصص أعمق", desc: "حكايات من حياتك الخاصة" },
+  { title: "محادثة مباشرة", desc: "رسائل نصية وصوتية مشفّرة" },
+  { title: "كشف الهوية", desc: "اسمك، صورتك (اختياري تمامًا)" }
+];
+
+/* ردود جاهزة لمحاكاة "الطرف التاني" في الشات التجريبي */
+const cannedReplies = [
+  "فاهمك تمامًا. شكرًا إنك بتشاركني ده 🤍",
+  "ده كلام مهم. مبسوط إن في حد يسمعه دلوقتي.",
+  "حاسس بصدق كلامك. خليك قريب من المساحة دي.",
+  "شكرًا للثقة. مش لازم تشرح أكتر من ده لو مش عايز."
+];
+
+function loadState() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (raw) return JSON.parse(raw);
+  } catch (e) {
+    console.warn("تعذر تحميل الحالة المحفوظة، سيتم البدء من جديد", e);
+  }
+  return defaultState();
+}
+
+function saveState(state) {
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+  } catch (e) {
+    console.warn("تعذر حفظ الحالة", e);
+  }
+}
+
+function resetState() {
+  localStorage.removeItem(STORAGE_KEY);
+  location.reload();
+}
+
+
+/* ============================================================
+   MoBoOk — منطق التطبيق (نسخة تجريبية بالكامل من جانب العميل)
+   كل البيانات محفوظة محليًا (localStorage) لأغراض العرض فقط.
+   في الإصدار الحقيقي، العمليات الحساسة (فتح المستويات، الموافقة
+   على التعليقات، تكوين يوتوبيا) لازم تتحقق على السيرفر
+   (Cloud Functions) مش على الكلاينت، عشان مفيش حد يقدر يتلاعب
+   بالحالة من جهازه.
+   ============================================================ */
+
+let state = loadState();
+state.auth = state.auth || { loggedIn: false, account: null };
+
+const PUSHED = ["post-detail", "create-post", "coupling-detail", "chat"];
+let history = [];
+let currentScreen = "home";
+let currentParams = {};
+
+let authScreen = "splash";
+let pendingVerifyCode = "";
+let forgotStep = 1;
+
+const $id = (id) => document.getElementById(id);
+
+document.addEventListener("DOMContentLoaded", init);
+
+function init() {
+  applyTheme(state.theme || "dark");
+  bindNav();
+
+  showAuthShell();
+  authScreen = "splash";
+  renderAuth();
+
+  setTimeout(() => {
+    if (state.auth.loggedIn && state.auth.account) {
+      enterApp();
+    } else {
+      goAuth(state.auth.account ? "signin" : "signup");
+    }
+  }, 1100);
+}
+
+function enterApp() {
+  hideAuthShell();
+  showScreen("home");
+  if (!state.onboarded) showWelcome();
+}
+
+/* ================= التنقل بين الشاشات ================= */
+
+function showScreen(name, params = {}, opts = {}) {
+  if (opts.push !== false) {
+    if (PUSHED.includes(name)) {
+      history.push({ screen: currentScreen, params: currentParams });
+    } else {
+      history = [];
+    }
+  }
+  currentScreen = name;
+  currentParams = params;
+  render();
+}
+
+function goBack() {
+  const prev = history.pop();
+  if (prev) showScreen(prev.screen, prev.params, { push: false });
+  else showScreen("home");
+}
+
+function render() {
+  document.querySelectorAll(".screen").forEach((s) => s.classList.add("hidden"));
+  const target = $id("screen-" + currentScreen);
+  if (target) target.classList.remove("hidden");
+
+  const isPushed = PUSHED.includes(currentScreen);
+  $id("back-header").classList.toggle("hidden", !isPushed);
+  $id("app-header").classList.toggle("hidden", isPushed);
+  $id("fab").classList.toggle("hidden", currentScreen !== "home");
+
+  document.querySelectorAll(".bottom-nav button").forEach((b) => {
+    b.classList.toggle("active", b.dataset.nav === rootTabFor(currentScreen));
+  });
+
+  if (isPushed) {
+    let title = "";
+    if (currentScreen === "post-detail") title = "المنشور";
+    else if (currentScreen === "create-post") title = "نشر منشور";
+    else if (currentScreen === "coupling-detail") title = `حلقات الثقة — صوت ${currentParams.voice || ""}`;
+    else if (currentScreen === "chat") title = `محادثة — صوت ${currentParams.voice || ""}`;
+    $id("back-title").textContent = title;
+  }
+
+  switch (currentScreen) {
+    case "home": renderHome(); break;
+    case "post-detail": renderPostDetail(currentParams.id); break;
+    case "create-post": renderCreatePost(); break;
+    case "connections": renderConnections(currentParams.tab || "suggested"); break;
+    case "coupling-detail": renderCouplingDetail(currentParams.voice); break;
+    case "messages": renderMessages(); break;
+    case "chat": renderChat(currentParams.voice); break;
+    case "more": renderMore(); break;
+  }
+  $id("main").scrollTop = 0;
+}
+
+function rootTabFor(name) {
+  if (["home", "post-detail", "create-post"].includes(name)) return "home";
+  if (["connections", "coupling-detail"].includes(name)) return "connections";
+  if (["messages", "chat"].includes(name)) return "messages";
+  return "more";
+}
+
+function bindNav() {
+  document.querySelectorAll(".bottom-nav button").forEach((btn) => {
+    btn.addEventListener("click", () => showScreen(btn.dataset.nav));
+  });
+  $id("back-btn").addEventListener("click", goBack);
+  $id("fab").addEventListener("click", () => showScreen("create-post"));
+}
+
+/* ================= التحقق والدخول (Auth) ================= */
+/* بريد إلكتروني فقط، بدون اسم حقيقي أو صورة — لا يوجد سيرفر حقيقي
+   هنا، كل ده محاكاة لإحساس الفلو فقط (Sign Up → تأكيد البريد →
+   الترحيب → الفيد) و(Sign In) و(نسيت كلمة المرور). */
+
+function showAuthShell() {
+  $id("auth-shell").classList.remove("hidden");
+  $id("app").classList.add("hidden");
+}
+
+function hideAuthShell() {
+  $id("auth-shell").classList.add("hidden");
+  $id("app").classList.remove("hidden");
+}
+
+function goAuth(screen) {
+  authScreen = screen;
+  renderAuth();
+}
+
+function renderAuth() {
+  const el = $id("auth-content");
+  if (authScreen === "splash") el.innerHTML = splashHTML();
+  else if (authScreen === "signup") el.innerHTML = signUpHTML();
+  else if (authScreen === "signin") el.innerHTML = signInHTML();
+  else if (authScreen === "verify") el.innerHTML = verifyHTML();
+  else if (authScreen === "forgot") el.innerHTML = forgotHTML();
+}
+
+function validEmail(v) {
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v);
+}
+
+function splashHTML() {
+  return `
+    <div class="splash-wrap">
+      <div class="splash-logo">MoBoOk</div>
+      <div class="splash-tagline">يُسمع الإنسان قبل أن يُعرف</div>
+    </div>
+  `;
+}
+
+/* ---- Sign Up ---- */
+function signUpHTML() {
+  return `
+    <div class="auth-card">
+      <div class="auth-logo">MoBoOk</div>
+      <p class="auth-sub">إنشاء حساب جديد — بالبريد الإلكتروني فقط، بدون اسم حقيقي أو صورة</p>
+      <input id="su-email" class="auth-input" type="email" placeholder="البريد الإلكتروني" />
+      <input id="su-password" class="auth-input" type="password" placeholder="كلمة المرور (٦ أحرف فأكثر)" />
+      <label class="auth-check">
+        <input type="checkbox" id="su-terms" />
+        <span>أوافق على الشروط وسياسة الخصوصية ومبدأ المجهولية في MoBoOk</span>
+      </label>
+      <div id="auth-error" class="auth-error"></div>
+      <button class="btn btn-primary btn-block" onclick="handleSignUp()">إنشاء حساب</button>
+      <p class="auth-switch">عندك حساب؟ <a onclick="goAuth('signin')">سجّل دخولك</a></p>
+    </div>
+  `;
+}
+
+function handleSignUp() {
+  const email = $id("su-email").value.trim();
+  const password = $id("su-password").value;
+  const terms = $id("su-terms").checked;
+  const err = $id("auth-error");
+  err.textContent = "";
+
+  if (!validEmail(email)) { err.textContent = "اكتب بريد إلكتروني صحيح"; return; }
+  if (password.length < 6) { err.textContent = "كلمة المرور لازم تكون ٦ أحرف على الأقل"; return; }
+  if (!terms) { err.textContent = "لازم توافق على الشروط وسياسة الخصوصية الأول"; return; }
+
+  const voice = "#" + (100 + Math.floor(Math.random() * 900));
+  state.auth.account = { email, password, voice };
+  state.me = voice;
+  saveState(state);
+
+  pendingVerifyCode = String(1000 + Math.floor(Math.random() * 9000));
+  goAuth("verify");
+}
+
+/* ---- تأكيد البريد ---- */
+function verifyHTML() {
+  return `
+    <div class="auth-card">
+      <div class="auth-logo">MoBoOk</div>
+      <p class="auth-sub">بعتنا كود تأكيد لبريدك</p>
+      <div class="auth-hint">تلميح تجريبي (مفيش بريد حقيقي هنا): الكود هو <b>${pendingVerifyCode}</b></div>
+      <input id="verify-code" class="auth-input" type="text" inputmode="numeric" placeholder="اكتب الكود هنا" />
+      <div id="auth-error" class="auth-error"></div>
+      <button class="btn btn-primary btn-block" onclick="handleVerify()">تأكيد البريد</button>
+    </div>
+  `;
+}
+
+function handleVerify() {
+  const code = $id("verify-code").value.trim();
+  const err = $id("auth-error");
+  if (code !== pendingVerifyCode) { err.textContent = "الكود غلط، جرّب تاني"; return; }
+  state.auth.loggedIn = true;
+  saveState(state);
+  enterApp();
+  toast(`تم تأكيد بريدك — أهلًا بيك صوت ${state.me} 👋`);
+}
+
+/* ---- Sign In ---- */
+function signInHTML() {
+  return `
+    <div class="auth-card">
+      <div class="auth-logo">MoBoOk</div>
+      <p class="auth-sub">تسجيل الدخول</p>
+      <input id="si-email" class="auth-input" type="email" placeholder="البريد الإلكتروني" />
+      <input id="si-password" class="auth-input" type="password" placeholder="كلمة المرور" />
+      <div id="auth-error" class="auth-error"></div>
+      <button class="btn btn-primary btn-block" onclick="handleSignIn()">تسجيل الدخول</button>
+      <p class="auth-switch"><a onclick="forgotStep=1; goAuth('forgot')">نسيت كلمة المرور؟</a></p>
+      <p class="auth-switch">لسه معندك حساب؟ <a onclick="goAuth('signup')">سجّل واحد جديد</a></p>
+    </div>
+  `;
+}
+
+function handleSignIn() {
+  const email = $id("si-email").value.trim();
+  const password = $id("si-password").value;
+  const err = $id("auth-error");
+  err.textContent = "";
+  const acc = state.auth.account;
+
+  if (!acc) { err.textContent = "مفيش حساب مسجل بعد — سجّل واحد جديد الأول"; return; }
+  if (email.toLowerCase() !== acc.email.toLowerCase() || password !== acc.password) {
+    err.textContent = "البريد أو كلمة المرور غلط";
+    return;
+  }
+  state.auth.loggedIn = true;
+  state.me = acc.voice;
+  saveState(state);
+  enterApp();
+  toast(`أهلًا بيك تاني، صوت ${state.me} 👋`);
+}
+
+/* ---- نسيت كلمة المرور ---- */
+function forgotHTML() {
+  if (forgotStep === 1) {
+    return `
+      <div class="auth-card">
+        <div class="auth-logo">MoBoOk</div>
+        <p class="auth-sub">استرجاع كلمة المرور</p>
+        <input id="fp-email" class="auth-input" type="email" placeholder="البريد الإلكتروني" />
+        <div id="auth-error" class="auth-error"></div>
+        <button class="btn btn-primary btn-block" onclick="handleForgotStep1()">إرسال رابط إعادة التعيين</button>
+        <p class="auth-switch"><a onclick="goAuth('signin')">رجوع لتسجيل الدخول</a></p>
+      </div>
+    `;
+  }
+  return `
+    <div class="auth-card">
+      <div class="auth-logo">MoBoOk</div>
+      <p class="auth-sub">تم إرسال رابط إعادة التعيين (تجريبي)</p>
+      <div class="auth-hint">تلميح تجريبي: الكود هو <b>${pendingVerifyCode}</b></div>
+      <input id="fp-code" class="auth-input" type="text" inputmode="numeric" placeholder="كود التحقق" />
+      <input id="fp-newpass" class="auth-input" type="password" placeholder="كلمة المرور الجديدة" />
+      <div id="auth-error" class="auth-error"></div>
+      <button class="btn btn-primary btn-block" onclick="handleForgotStep2()">تعيين كلمة المرور الجديدة</button>
+    </div>
+  `;
+}
+
+function handleForgotStep1() {
+  const email = $id("fp-email").value.trim();
+  const err = $id("auth-error");
+  if (!state.auth.account || email.toLowerCase() !== state.auth.account.email.toLowerCase()) {
+    err.textContent = "مفيش حساب مسجل بالبريد ده";
+    return;
+  }
+  pendingVerifyCode = String(1000 + Math.floor(Math.random() * 9000));
+  forgotStep = 2;
+  goAuth("forgot");
+}
+
+function handleForgotStep2() {
+  const code = $id("fp-code").value.trim();
+  const newpass = $id("fp-newpass").value;
+  const err = $id("auth-error");
+  if (code !== pendingVerifyCode) { err.textContent = "الكود غلط"; return; }
+  if (newpass.length < 6) { err.textContent = "كلمة المرور لازم تكون ٦ أحرف على الأقل"; return; }
+  state.auth.account.password = newpass;
+  saveState(state);
+  forgotStep = 1;
+  goAuth("signin");
+  toast("تم تغيير كلمة المرور — سجّل دخولك دلوقتي");
+}
+
+/* ---- تسجيل الخروج ---- */
+function logout() {
+  state.auth.loggedIn = false;
+  saveState(state);
+  authScreen = state.auth.account ? "signin" : "signup";
+  showAuthShell();
+  renderAuth();
+}
+
+/* ================= المدينة الفاضلة (الفيد) ================= */
+
+function renderHome() {
+  const el = $id("screen-home");
+  const posts = [...state.posts].reverse();
+  el.innerHTML = `
+    <div class="feed-tagline">المدينة الفاضلة — كل الأصوات هنا متساوية</div>
+    ${posts.map(postCardHTML).join("") || emptyState("لسه مفيش منشورات. كن أول صوت يتكلم.")}
+  `;
+}
+
+function postCardHTML(p) {
+  const pendingCount = p.mine ? p.comments.filter((c) => c.status === "pending").length : 0;
+  return `
+    <article class="card post-card" onclick="openPost('${p.id}')">
+      <div class="post-head">
+        <span class="voice-tag"><span class="vmark"></span> صوت ${p.voice}</span>
+        <span class="time">${p.time}</span>
+      </div>
+      <p class="post-content">${escapeHTML(p.content)}</p>
+      <div class="post-actions">
+        <span class="${p.supportedByMe ? "supported" : ""}" onclick="event.stopPropagation(); toggleSupport('${p.id}')">💛 دعم (${p.supports})</span>
+        <span>💬 ${p.comments.filter((c) => c.status === "approved").length}</span>
+        ${pendingCount ? `<span class="pending-flag">⏳ ${pendingCount} في الانتظار</span>` : ""}
+      </div>
+    </article>
+  `;
+}
+
+function openPost(id) {
+  showScreen("post-detail", { id });
+}
+
+function toggleSupport(id) {
+  const p = state.posts.find((x) => x.id === id);
+  if (!p) return;
+  p.supportedByMe = !p.supportedByMe;
+  p.supports += p.supportedByMe ? 1 : -1;
+  saveState(state);
+  if (currentScreen === "home") renderHome();
+  if (currentScreen === "post-detail") renderPostDetail(id);
+}
+
+/* ================= تفاصيل المنشور + التعليقات ================= */
+
+function renderPostDetail(id) {
+  const p = state.posts.find((x) => x.id === id);
+  const el = $id("screen-post-detail");
+  if (!p) { el.innerHTML = emptyState("المنشور غير موجود."); return; }
+
+  const approved = p.comments.filter((c) => c.status === "approved");
+  const pending = p.mine ? p.comments.filter((c) => c.status === "pending") : [];
+
+  el.innerHTML = `
+    <div class="card">
+      <div class="post-head">
+        <span class="voice-tag"><span class="vmark"></span> صوت ${p.voice}</span>
+        <span class="time">${p.time}</span>
+      </div>
+      <p class="post-content">${escapeHTML(p.content)}</p>
+      <div class="post-actions">
+        <span class="${p.supportedByMe ? "supported" : ""}" onclick="toggleSupport('${p.id}')">💛 دعم (${p.supports})</span>
+      </div>
+    </div>
+
+    ${pending.length ? `
+      <h3 class="section-label">تعليقات في الانتظار (إنت بس اللي تشوفها)</h3>
+      ${pending.map((c) => `
+        <div class="card pending-comment">
+          <div class="pending-label">⏳ في الانتظار</div>
+          <p>صوت ${c.voice}: "${escapeHTML(c.content)}"</p>
+          <div class="row-actions">
+            <button class="btn btn-success btn-sm" onclick="moderateComment('${p.id}','${c.id}','approved')">وافق ✓</button>
+            <button class="btn btn-ghost btn-sm" onclick="moderateComment('${p.id}','${c.id}','rejected')">أرفض</button>
+          </div>
+        </div>
+      `).join("")}
+    ` : ""}
+
+    <h3 class="section-label">التعليقات (${approved.length})</h3>
+    ${approved.map((c) => `
+      <div class="card comment-card">
+        <b>صوت ${c.voice}</b>
+        <p>${escapeHTML(c.content)}</p>
+      </div>
+    `).join("") || emptyState("لسه مفيش تعليقات موافق عليها.")}
+
+    <div class="comment-input-row">
+      <input id="comment-input" type="text" placeholder="اكتب تعليقًا — هيحتاج موافقة صاحب المنشور..." />
+      <button class="btn btn-primary" onclick="submitComment('${p.id}')">إرسال</button>
+    </div>
+  `;
+}
+
+function moderateComment(postId, commentId, status) {
+  const p = state.posts.find((x) => x.id === postId);
+  const c = p.comments.find((x) => x.id === commentId);
+  if (!c) return;
+  c.status = status;
+  saveState(state);
+  renderPostDetail(postId);
+  toast(status === "approved" ? "تم نشر التعليق للجميع ✓" : "تم رفض التعليق، ولن يظهر لأي صوت");
+}
+
+function submitComment(postId) {
+  const input = $id("comment-input");
+  const val = input.value.trim();
+  if (!val) return;
+  const p = state.posts.find((x) => x.id === postId);
+  p.comments.push({ id: "c" + Date.now(), voice: state.me, content: val, status: "pending" });
+  saveState(state);
+  input.value = "";
+  renderPostDetail(postId);
+  toast("تم إرسال تعليقك — في انتظار موافقة صاحب المنشور");
+}
+
+/* ================= نشر منشور ================= */
+
+function renderCreatePost() {
+  $id("screen-create-post").innerHTML = `
+    <textarea id="new-post-text" class="post-textarea" placeholder="ما الذي تود قوله؟ كلامك هنا هيظهر باسم ${state.me} بس."></textarea>
+    <button class="btn btn-primary btn-block" onclick="publishPost()">نشر للمدينة الفاضلة</button>
+    <button class="btn btn-secondary btn-block" onclick="goBack()">إلغاء</button>
+  `;
+}
+
+function publishPost() {
+  const val = $id("new-post-text").value.trim();
+  if (!val) { toast("اكتب حاجة الأول 🙂"); return; }
+  state.posts.push({
+    id: "p" + Date.now(),
+    voice: state.me,
+    mine: true,
+    time: "الآن",
+    content: val,
+    supports: 0,
+    supportedByMe: false,
+    comments: []
+  });
+  saveState(state);
+  showScreen("home");
+  toast("تم النشر في المدينة الفاضلة 🏛️");
+}
+
+/* ================= الاقتران (Connections) ================= */
+
+function renderConnections(tab) {
+  const el = $id("screen-connections");
+  el.innerHTML = `
+    <div class="tabs">
+      <button class="tab ${tab === "suggested" ? "active" : ""}" onclick="showScreen('connections',{tab:'suggested'})">مقترح</button>
+      <button class="tab ${tab === "active" ? "active" : ""}" onclick="showScreen('connections',{tab:'active'})">نشط</button>
+      <button class="tab ${tab === "utopia" ? "active" : ""}" onclick="showScreen('connections',{tab:'utopia'})">يوتوبيا</button>
+    </div>
+    <div id="connections-body"></div>
+  `;
+  const body = $id("connections-body");
+  if (tab === "suggested") body.innerHTML = renderSuggestedConnections();
+  if (tab === "active") body.innerHTML = renderActiveConnections();
+  if (tab === "utopia") body.innerHTML = renderUtopiaTab();
+}
+
+function renderSuggestedConnections() {
+  const list = state.connections.suggested;
+  if (!list.length) return emptyState("مفيش اقترانات مقترحة دلوقتي. تفاعل أكتر في المدينة الفاضلة.");
+  return list.map((s) => `
+    <div class="card">
+      <div class="sc-head">صوت ${s.voice}</div>
+      <div class="checklist">
+        <div>✓ منشورات متبادلة (${s.sharedPosts})</div>
+        <div>✓ تعليقات متبادلة (${s.sharedComments})</div>
+        <div>✓ موافقات متبادلة (${s.sharedApprovals})</div>
+      </div>
+      <button class="btn btn-coupling btn-block" onclick="acceptConnection('${s.voice}')">وافق على الاقتران</button>
+    </div>
+  `).join("");
+}
+
+function acceptConnection(voice) {
+  state.connections.suggested = state.connections.suggested.filter((s) => s.voice !== voice);
+  state.connections.active.push({ voice, mine: [true, false, false, false], theirs: [true, false, false, false] });
+  saveState(state);
+  showScreen("connections", { tab: "active" });
+  toast(`الاقتران مع صوت ${voice} فعّال الآن — مستوى ١ مفتوح تلقائيًا`);
+}
+
+function renderActiveConnections() {
+  const list = state.connections.active;
+  if (!list.length) return emptyState("لسه مفيش اقترانات نشطة.");
+  return list.map((c) => `
+    <div class="card clickable" onclick="openCoupling('${c.voice}')">
+      <div class="sc-head">صوت ${c.voice}</div>
+      <div class="trust-mini">${trustDots(c.mine)} <span class="vs">إنت</span> ${trustDots(c.theirs)} <span class="vs">هو</span></div>
+    </div>
+  `).join("");
+}
+
+function trustDots(arr) {
+  return arr.map((open) => `<span class="dot ${open ? "on" : ""}"></span>`).join("");
+}
+
+function openCoupling(voice) {
+  showScreen("coupling-detail", { voice });
+}
+
+/* ================= حلقات الثقة (Coupling Detail) ================= */
+
+function renderCouplingDetail(voice) {
+  const c = state.connections.active.find((x) => x.voice === voice);
+  const el = $id("screen-coupling-detail");
+  if (!c) { el.innerHTML = emptyState("الاقتران غير موجود."); return; }
+
+  el.innerHTML = `
+    <h2 class="display-title">علاقتك مع صوت ${c.voice}</h2>
+    <p class="muted">كل طرف يتحكم في عمق ما يكشفه بشكل مستقل — العلاقة ممكن تكون غير متماثلة.</p>
+    <div class="trust-cols">
+      <div class="trust-col">
+        <div class="trust-col-title">إنت فاتح له</div>
+        ${trustLevels.map((lv, i) => trustRowHTML(lv, c.mine[i], i, true, c)).join("")}
+      </div>
+      <div class="trust-col">
+        <div class="trust-col-title">هو فاتح لك</div>
+        ${trustLevels.map((lv, i) => trustRowHTML(lv, c.theirs[i], i, false, c)).join("")}
+      </div>
+    </div>
+    ${c.mine[2] && c.theirs[2] ? `<button class="btn btn-coupling btn-block" onclick="goToChat('${c.voice}')">فتح المحادثة المباشرة 💬</button>` : ""}
+    ${c.mine[3] && c.theirs[3] ? `<div class="card reveal-card">🎉 تم كشف الهوية بشكل متبادل. (في النسخة الحقيقية، يظهر هنا الاسم/الصورة لو الطرفين اختاروا الكشف فعليًا)</div>` : ""}
+  `;
+}
+
+function trustRowHTML(level, isOpen, index, isMine, conn) {
+  const canOpen = isMine && !isOpen && (index === 0 || conn.mine[index - 1]);
+  return `
+    <div class="trust-row ${isOpen ? "open" : ""}">
+      <div class="tr-num">${index + 1}</div>
+      <div class="tr-info">
+        <b>${level.title}</b>
+        <span>${level.desc}</span>
+      </div>
+      ${isMine
+        ? (isOpen
+            ? `<span class="tr-status">مفتوح ✓</span>`
+            : canOpen
+              ? `<button class="btn btn-sm btn-coupling" onclick="openTrustLevel('${conn.voice}', ${index})">فتح</button>`
+              : `<span class="tr-status">مقفول</span>`)
+        : `<span class="tr-status">${isOpen ? "مفتوح ✓" : "مقفول"}</span>`}
+    </div>
+  `;
+}
+
+function openTrustLevel(voice, index) {
+  const c = state.connections.active.find((x) => x.voice === voice);
+  if (!c) return;
+  c.mine[index] = true;
+  saveState(state);
+  renderCouplingDetail(voice);
+  toast("تم فتح المستوى من جانبك — القرار ده ليك بس");
+
+  /* محاكاة: الطرف التاني بيفتح نفس المستوى بعد لحظات (لأغراض العرض فقط) */
+  setTimeout(() => {
+    const conn = state.connections.active.find((x) => x.voice === voice);
+    if (conn && !conn.theirs[index]) {
+      conn.theirs[index] = true;
+      saveState(state);
+      if (currentScreen === "coupling-detail" && currentParams.voice === voice) renderCouplingDetail(voice);
+      toast(`صوت ${voice} فتح المستوى ${index + 1} من جانبه كمان 🎉`);
+      if (index === 2) ensureConversation(voice);
+    }
+  }, 1800);
+}
+
+function goToChat(voice) {
+  ensureConversation(voice);
+  showScreen("chat", { voice });
+}
+
+/* ================= الرسائل + المحادثة ================= */
+
+function ensureConversation(voice) {
+  if (!state.conversations.find((x) => x.voice === voice)) {
+    state.conversations.push({
+      voice,
+      messages: [{ from: "them", text: "شكرًا إنك فتحت المستوى ده. كنت خايف أتكلم عن حاجات معينة." }]
+    });
+    saveState(state);
+  }
+}
+
+function renderMessages() {
+  const el = $id("screen-messages");
+  const list = state.conversations;
+  if (!list.length) {
+    el.innerHTML = emptyState("الرسائل المباشرة بتفتح بعد ما الطرفين يفتحوا المستوى ٣ من الاقتران.");
+    return;
+  }
+  el.innerHTML = list.map((c) => {
+    const last = c.messages[c.messages.length - 1];
+    return `
+      <div class="card clickable" onclick="showScreen('chat',{voice:'${c.voice}'})">
+        <div class="sc-head">صوت ${c.voice}</div>
+        <p class="muted">${escapeHTML(last ? last.text : "")}</p>
+      </div>
+    `;
+  }).join("");
+}
+
+function renderChat(voice) {
+  const conv = state.conversations.find((x) => x.voice === voice);
+  const el = $id("screen-chat");
+  if (!conv) { el.innerHTML = emptyState("المحادثة غير موجودة."); return; }
+  el.innerHTML = `
+    <div class="chat-banner">مستوى ٣ مفتوح — تواصل مباشر، لسه بدون أسماء</div>
+    <div class="chat-col" id="chat-col">
+      ${conv.messages.map((m) => `<div class="bubble ${m.from === "me" ? "me" : "them"}">${escapeHTML(m.text)}</div>`).join("")}
+    </div>
+    <div class="comment-input-row">
+      <input id="chat-input" type="text" placeholder="اكتب رسالة..." />
+      <button class="btn btn-primary" onclick="sendMessage('${voice}')">إرسال</button>
+    </div>
+  `;
+  const colEl = $id("chat-col");
+  colEl.scrollTop = colEl.scrollHeight;
+}
+
+function sendMessage(voice) {
+  const input = $id("chat-input");
+  const val = input.value.trim();
+  if (!val) return;
+  const conv = state.conversations.find((x) => x.voice === voice);
+  conv.messages.push({ from: "me", text: val });
+  saveState(state);
+  input.value = "";
+  renderChat(voice);
+
+  setTimeout(() => {
+    conv.messages.push({ from: "them", text: cannedReplies[Math.floor(Math.random() * cannedReplies.length)] });
+    saveState(state);
+    if (currentScreen === "chat" && currentParams.voice === voice) renderChat(voice);
+  }, 1400);
+}
+
+/* ================= يوتوبيا ================= */
+
+function renderUtopiaTab() {
+  return `
+    <h3 class="section-label">مقترحة</h3>
+    ${state.utopias.suggested.map(utopiaCardHTML).join("") || emptyState("مفيش مناطق جماعية مقترحة دلوقتي.")}
+    ${state.utopias.active.length ? `
+      <h3 class="section-label">نشطة</h3>
+      ${state.utopias.active.map((u) => `
+        <div class="card">
+          <div class="sc-head">🌍 ${u.name}</div>
+          <p class="muted">${u.members.length} أصوات في المنطقة</p>
+        </div>
+      `).join("")}
+    ` : ""}
+  `;
+}
+
+function utopiaCardHTML(u) {
+  const allApproved = u.members.every((m) => m.approved);
+  return `
+    <div class="card">
+      <div class="sc-head">🌍 ${u.name}</div>
+      <div class="checklist">
+        ${u.members.map((m) => `<div>${m.approved ? "✓" : "⏳"} صوت ${m.voice} — ${m.approved ? "موافق" : "في الانتظار"}</div>`).join("")}
+      </div>
+      ${allApproved
+        ? `<p class="utopia-note">كل الأعضاء وافقوا! المنطقة جاهزة للتفعيل.</p><button class="btn btn-utopia btn-block" onclick="activateUtopia('${u.id}')">تفعيل المنطقة</button>`
+        : `<button class="btn btn-utopia btn-block" onclick="requestUtopiaApprovals('${u.id}')">اطلب الموافقة</button>`}
+    </div>
+  `;
+}
+
+function requestUtopiaApprovals(id) {
+  toast("تم إرسال الطلب لباقي الأصوات...");
+  setTimeout(() => {
+    const u = state.utopias.suggested.find((x) => x.id === id);
+    if (!u) return;
+    u.members.forEach((m) => (m.approved = true));
+    saveState(state);
+    if (currentScreen === "connections") renderConnections("utopia");
+    toast("كل الأعضاء وافقوا! 🎉");
+  }, 1800);
+}
+
+function activateUtopia(id) {
+  const idx = state.utopias.suggested.findIndex((x) => x.id === id);
+  if (idx === -1) return;
+  const [u] = state.utopias.suggested.splice(idx, 1);
+  state.utopias.active.push(u);
+  saveState(state);
+  renderConnections("utopia");
+  toast(`منطقة "${u.name}" بقت نشطة 🌍`);
+}
+
+/* ================= المزيد (البروفايل/الإعدادات) ================= */
+
+function renderMore() {
+  const myPosts = state.posts.filter((p) => p.mine).length;
+  const connectionsCount = state.connections.active.length;
+  const groupsCount = state.utopias.active.length;
+  const el = $id("screen-more");
+  el.innerHTML = `
+    <div class="profile-head">
+      <div class="avatar-ring"></div>
+      <div>
+        <div class="profile-voice">صوت ${state.me}</div>
+        <div class="muted">عضو في المدينة الفاضلة</div>
+      </div>
+    </div>
+
+    <div class="stats-grid">
+      <div class="stat"><b>${myPosts}</b><span>منشورات</span></div>
+      <div class="stat"><b>${connectionsCount}</b><span>اقترانات</span></div>
+      <div class="stat"><b>${groupsCount}</b><span>مناطق يوتوبيا</span></div>
+    </div>
+
+    <h3 class="section-label">المظهر</h3>
+    <div class="settings-row">
+      <span>الوضع الليلي</span>
+      <label class="switch">
+        <input type="checkbox" id="theme-switch" ${state.theme === "dark" ? "checked" : ""} onchange="toggleTheme()">
+        <span class="slider"></span>
+      </label>
+    </div>
+
+    <h3 class="section-label">حول MoBoOk</h3>
+    <div class="card about-card clickable" onclick="toggleAbout()">
+      <b>الشعار</b>
+      <p class="muted">يُسمع الإنسان قبل أن يُعرف</p>
+    </div>
+    <div id="about-details" class="card hidden">
+      <p><b>المبادئ:</b> لا صور، لا فيديوهات، لا متابعين، لا كشف للهوية إلا بموافقة طوعية متدرجة.</p>
+      <p><b>الأمان:</b> أي تعليق لازم يوافق عليه صاحب المنشور قبل ما يظهر للجميع.</p>
+      <p><b>الخصوصية:</b> التسجيل بالبريد فقط، بدون اسم حقيقي أو صورة.</p>
+    </div>
+
+    <button class="btn btn-ghost btn-block" style="margin-top:24px" onclick="logout()">تسجيل خروج</button>
+    <button class="btn btn-secondary btn-block" onclick="resetState()">تصفير البيانات التجريبية</button>
+  `;
+}
+
+function toggleAbout() {
+  $id("about-details").classList.toggle("hidden");
+}
+
+function toggleTheme() {
+  state.theme = state.theme === "dark" ? "light" : "dark";
+  applyTheme(state.theme);
+  saveState(state);
+}
+
+function applyTheme(theme) {
+  document.documentElement.setAttribute("data-theme", theme);
+}
+
+/* ================= شاشة الترحيب ================= */
+
+function showWelcome() {
+  $id("welcome-overlay").classList.remove("hidden");
+}
+
+function dismissWelcome() {
+  state.onboarded = true;
+  saveState(state);
+  $id("welcome-overlay").classList.add("hidden");
+}
+
+/* ================= أدوات مساعدة ================= */
+
+function toast(msg) {
+  const t = $id("toast");
+  t.textContent = msg;
+  t.classList.remove("hidden");
+  t.classList.add("show");
+  clearTimeout(t._timer);
+  t._timer = setTimeout(() => {
+    t.classList.remove("show");
+    setTimeout(() => t.classList.add("hidden"), 300);
+  }, 2400);
+}
+
+function emptyState(msg) {
+  return `<div class="empty-state">${msg}</div>`;
+}
+
+function escapeHTML(str) {
+  const div = document.createElement("div");
+  div.textContent = str;
+  return div.innerHTML;
+}
+
+</script>
+</body>
+</html>
