@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MoBoOk — التصميم النهائي</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lalezar&family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#0F1117;
+    --surface:#1C2128;
+    --surface-soft:#252D37;
+    --paper:#F6F4F0;
+    --paper-dim:#EAE7E0;
+    --text-dim:#8B93A1;
+    --accent:#00D9FF;
+    --gold:#FFB84D;
+  }
+
+  *{box-sizing:border-box; margin:0; padding:0;}
+  body{background:var(--ink); color:var(--paper); font-family:'IBM Plex Sans Arabic',Tahoma,sans-serif;}
+  .display{font-family:'Lalezar','IBM Plex Sans Arabic',sans-serif; font-weight:400;}
+
+  .hero{padding:60px 24px 50px; text-align:center;}
+  .hero h1{font-size:48px; line-height:1; margin-bottom:8px;}
+  .hero h2{font-size:18px; font-weight:600; color:var(--text-dim); margin-bottom:12px;}
+  .hero p{max-width:500px; margin:0 auto; color:var(--text-dim); font-size:15px; line-height:1.8;}
+  .tagline{display:inline-block; color:var(--accent); margin-bottom:20px; font-size:13px; letter-spacing:.05em;}
+
+  .phones-row{display:flex; gap:28px; overflow-x:auto; scroll-snap-type:x mandatory; padding:8px 24px 40px; scrollbar-width:none;}
+  .phones-row::-webkit-scrollbar{display:none;}
+  .phone-block{flex:0 0 auto; width:300px; scroll-snap-align:center;}
+  .eyebrow{font-size:13px; color:var(--text-dim); letter-spacing:.04em; margin-bottom:10px; padding-right:4px;}
+  .eyebrow b{color:var(--accent); font-weight:700;}
+
+  .phone{width:300px; height:624px; background:#070A0E; border-radius:38px; padding:14px;
+    box-shadow:0 30px 60px -20px rgba(0,0,0,.7), 0 0 0 1px var(--surface-soft);}
+  .screen{width:100%; height:100%; background:var(--paper); border-radius:26px; overflow:hidden; position:relative;
+    display:flex; flex-direction:column; color:#1a1d24;}
+  .notch{position:absolute; top:8px; left:50%; transform:translateX(-50%); width:70px; height:18px; background:#070A0E; border-radius:12px; z-index:5;}
+  .statusbar{display:flex; justify-content:space-between; align-items:center; padding:14px 22px 4px; font-size:12px; font-weight:600;}
+  .sb-dot{width:5px; height:5px; border-radius:50%; background:#1a1d24;}
+  .screen-body{flex:1; padding:14px 18px 0; overflow-y:auto;}
+  .navbar{display:flex; justify-content:space-around; align-items:center; padding:12px 0 18px; border-top:1px solid var(--paper-dim); margin-top:auto;}
+  .nav-icon{width:22px; height:22px; border-radius:7px; background:var(--paper-dim);}
+  .nav-icon.active{background:var(--ink);}
+
+  /* ---------- SCREEN 1: المدينة الفاضلة ---------- */
+  .feed-head{display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;}
+  .logo{font-family:'Lalezar'; font-size:20px; color:var(--ink);}
+  .feed-tag{font-size:10px; color:var(--text-dim); margin-bottom:10px;}
+
+  .post{background:var(--paper-dim); border-radius:14px; padding:11px 13px; margin-bottom:10px;}
+  .post-header{display:flex; align-items:center; justify-content:space-between; margin-bottom:6px;}
+  .post-voice{font-size:13px; font-weight:700; color:var(--ink);}
+  .post-time{font-size:10px; color:var(--text-dim);}
+  .post p{font-size:12px; line-height:1.65; color:#2a2d34; margin-bottom:8px;}
+  .post-actions{display:flex; gap:12px; font-size:10.5px; color:var(--text-dim);}
+
+  .pending-comment{background:#FFF3E0; border-right:3px solid var(--gold); border-radius:10px; padding:9px 11px; margin-top:8px; font-size:10.5px;}
+  .pending-comment-label{font-size:9px; color:#FF8C00; font-weight:700; margin-bottom:4px;}
+  .pending-comment p{color:#8B7355; margin-bottom:6px;}
+  .pending-btns{display:flex; gap:6px;}
+  .pending-btn{flex:1; padding:5px; border-radius:6px; font-size:9px; font-weight:700; text-align:center;}
+  .approve{background:var(--ink); color:var(--paper);}
+  .decline{background:var(--paper-dim); color:var(--text-dim);}
+
+  /* ---------- SCREEN 2: بناء العلاقة ---------- */
+  .suggested-connection{background:var(--surface-soft); border-radius:14px; padding:13px; margin-top:10px;}
+  .sc-head{font-size:12px; font-weight:700; color:var(--paper); margin-bottom:8px;}
+  .sc-info{font-size:11px; color:var(--text-dim); line-height:1.6; margin-bottom:10px;}
+  .progress-bar{background:var(--paper-dim); height:5px; border-radius:3px; overflow:hidden; margin:8px 0;}
+  .progress-fill{height:100%; background:var(--accent); width:66%;}
+  .progress-text{font-size:10px; color:var(--text-dim); margin-bottom:8px;}
+  .sc-cta{background:var(--ink); color:var(--paper); border-radius:10px; padding:9px; text-align:center; font-size:11px; font-weight:700;}
+
+  /* ---------- SCREEN 3: الاقتران - مستويات الثقة ---------- */
+  .coupling-head{font-size:24px; margin:8px 0 2px; color:var(--ink);}
+  .coupling-sub{font-size:11px; color:var(--text-dim); margin-bottom:12px; line-height:1.6;}
+
+  .trust-level{display:flex; align-items:center; gap:11px; background:var(--paper-dim); border-radius:12px; padding:10px 12px; margin-bottom:8px;}
+  .tl-num{width:28px; height:28px; border-radius:50%; background:var(--surface-soft); display:flex; align-items:center; justify-content:center; font-weight:700; font-size:12px; color:var(--paper); flex-shrink:0;}
+  .tl-num.t1{background:#00B8D4;}
+  .tl-num.t2{background:#0091B2;}
+  .tl-num.t3{background:#0075A1;}
+  .tl-num.t4{background:#004F7C;}
+  .tl-info{flex:1;}
+  .tl-info b{font-size:11.5px; display:block; color:var(--ink);}
+  .tl-info span{font-size:9.5px; color:var(--text-dim); line-height:1.4; margin-top:2px; display:block;}
+  .tl-control{font-size:10px; font-weight:700; color:var(--text-dim);}
+
+  .trust-note{font-size:10px; color:var(--text-dim); margin-top:8px; line-height:1.6; background:var(--paper-dim); padding:8px; border-radius:8px;}
+
+  /* ---------- SCREEN 4: يوتوبيا ---------- */
+  .utopia-head{font-size:22px; margin:8px 0 2px; color:var(--ink);}
+  .utopia-sub{font-size:10.5px; color:var(--text-dim); margin-bottom:12px; line-height:1.6;}
+
+  .members-grid{display:flex; gap:10px; margin-bottom:14px;}
+  .member-badge{display:flex; flex-direction:column; align-items:center; gap:6px;}
+  .member-icon{width:36px; height:36px; border-radius:50%; background:var(--accent); display:flex; align-items:center; justify-content:center; font-size:14px; font-weight:700; color:var(--ink);}
+  .member-label{font-size:9px; color:var(--text-dim);}
+
+  .requirements{background:var(--paper-dim); border-radius:12px; padding:10px; margin-bottom:10px;}
+  .req-title{font-size:10px; font-weight:700; color:var(--ink); margin-bottom:6px;}
+  .req-item{display:flex; align-items:center; gap:6px; font-size:9.5px; color:var(--text-dim); margin-bottom:4px;}
+  .req-icon{font-size:10px;}
+
+  .utopia-cta{background:var(--ink); color:var(--paper); border-radius:12px; padding:11px; text-align:center; font-size:12px; font-weight:700;}
+
+  /* ---------- SCREEN 5: المحادثة ---------- */
+  .chat-banner{background:var(--surface-soft); color:var(--paper); font-size:10px; text-align:center; padding:8px; border-radius:10px; margin-bottom:12px;}
+  .chat-col{display:flex; flex-direction:column; gap:8px;}
+  .bubble{max-width:75%; padding:10px 12px; border-radius:12px; font-size:11.5px; line-height:1.5;}
+  .bubble.them{background:var(--paper-dim); color:var(--ink); align-self:flex-start; border-bottom-right-radius:2px;}
+  .bubble.me{background:var(--ink); color:var(--paper); align-self:flex-end; border-bottom-left-radius:2px; margin-right:auto;}
+
+  /* ---------- Footer ---------- */
+  .legend{padding:10px 24px 70px; text-align:center;}
+  .legend-title{font-size:12px; color:var(--text-dim); margin-bottom:14px; letter-spacing:.04em;}
+  .legend-row{display:flex; justify-content:center; gap:18px; flex-wrap:wrap;}
+  .legend-item{display:flex; align-items:center; gap:6px; font-size:12px; color:var(--paper);}
+</style>
+</head>
+<body>
+
+  <section class="hero">
+    <div class="tagline">الشعار: يُسمع الإنسان قبل أن يُعرَف</div>
+    <h1 class="display">MoBoOk</h1>
+    <h2>ثلاث مستويات من الثقة والفهم الحقيقي</h2>
+    <p>مساحة حيث يبني الناس ثقة أولاً، ثم يختارون بأنفسهم مقدار ما يريدون كشفه من هويتهم. في كل خطوة: موافقة، تفاعل حقيقي، ثم تطور طبيعي.</p>
+  </section>
+
+  <div class="phones-row">
+
+    <!-- SCREEN 1: المدينة الفاضلة -->
+    <div class="phone-block">
+      <div class="eyebrow"><b>01</b> — المدينة الفاضلة (الفيد العام)</div>
+      <div class="phone">
+        <div class="screen">
+          <div class="notch"></div>
+          <div class="statusbar">
+            <span>٩:٤١</span>
+            <span style="display:flex; gap:5px;"><span class="sb-dot"></span><span class="sb-dot"></span><span class="sb-dot"></span></span>
+          </div>
+          <div class="screen-body">
+            <div class="feed-head">
+              <span class="logo">MoBoOk</span>
+            </div>
+            <div class="feed-tag">كل الأصوات هنا متساوية — لا متابعين، لا شهرة، فقط الكلام النقي</div>
+
+            <div class="post">
+              <div class="post-header">
+                <span class="post-voice">صوت #128</span>
+                <span class="post-time">منذ ١ س</span>
+              </div>
+              <p>بقالي وقت بتفكر في المستقبل بطريقة مختلفة. ماحدش حوليّ يشوف دي الجهة اللي فيّ خايف منها.</p>
+              <div class="post-actions"><span>❤️ دعم</span><span>💬 ٧</span></div>
+            </div>
+
+            <div class="post">
+              <div class="post-header">
+                <span class="post-voice">صوت #305</span>
+                <span class="post-time">منذ ٢ س</span>
+              </div>
+              <p>التعليقات المرفوضة لا تظهر لك ولا لحد — لكن الموافق عليها بتبقى هنا للجميع 💭</p>
+              <div class="post-actions"><span>❤️ دعم</span><span>💬 ٣</span></div>
+              
+              <div class="pending-comment">
+                <div class="pending-comment-label">تعليق في الانتظار</div>
+                <p>صوت #742: "أنا حاسس نفس الحاجة. إنت في الزاوية الصح."</p>
+                <div class="pending-btns">
+                  <div class="pending-btn approve">وافق ✓</div>
+                  <div class="pending-btn decline">أرفض</div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="navbar"><div class="nav-icon active"></div><div class="nav-icon"></div><div class="nav-icon"></div><div class="nav-icon"></div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SCREEN 2: بناء العلاقة -->
+    <div class="phone-block">
+      <div class="eyebrow"><b>02</b> — بناء العلاقة (شروط الاقتران)</div>
+      <div class="phone">
+        <div class="screen">
+          <div class="notch"></div>
+          <div class="statusbar">
+            <span>٩:٤١</span>
+            <span style="display:flex; gap:5px;"><span class="sb-dot"></span><span class="sb-dot"></span><span class="sb-dot"></span></span>
+          </div>
+          <div class="screen-body">
+            <div style="font-size:13px; font-weight:700; color:var(--ink); margin:8px 0 2px;">اقتران مقترح</div>
+            
+            <div class="suggested-connection">
+              <div class="sc-head">صوت #305 + صوت #128</div>
+              <div class="sc-info">تفاعل متبادل قوي في المدينة الفاضلة. كل منكما:</div>
+              
+              <div style="font-size:10px; color:var(--ink); margin-bottom:6px;">
+                <div>✓ نشر منشورات (كل واحد)</div>
+                <div>✓ علّق على منشورات الآخر</div>
+                <div>✓ وافق على تعليقاته</div>
+              </div>
+
+              <div class="progress-text">جاهزين للاقتران ✓</div>
+              <div class="progress-bar"><div class="progress-fill" style="width:100%"></div></div>
+
+              <div style="font-size:9.5px; color:var(--text-dim); margin-bottom:10px; line-height:1.6;">لو وافقت، هتفتح مساحة ثنائية خاصة وتبدأ مستويات الثقة تظهر. كل واحد فيكما يتحكم بما يكشفه.</div>
+              <div class="sc-cta">وافق على الاقتران</div>
+            </div>
+          </div>
+          <div class="navbar"><div class="nav-icon"></div><div class="nav-icon active"></div><div class="nav-icon"></div><div class="nav-icon"></div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SCREEN 3: الاقتران - مستويات الثقة -->
+    <div class="phone-block">
+      <div class="eyebrow"><b>03</b> — الاقتران: مستويات الثقة</div>
+      <div class="phone">
+        <div class="screen">
+          <div class="notch"></div>
+          <div class="statusbar">
+            <span>٩:٤١</span>
+            <span style="display:flex; gap:5px;"><span class="sb-dot"></span><span class="sb-dot"></span><span class="sb-dot"></span></span>
+          </div>
+          <div class="screen-body">
+            <div class="coupling-head display">علاقتك مع صوت #305</div>
+            <div class="coupling-sub">كل مستوى قرار طوعي منفرد. إنت متحكم في ما تكشفه.</div>
+
+            <div class="trust-level">
+              <div class="tl-num t1">١</div>
+              <div class="tl-info">
+                <b>اهتمامات وأفكار عامة</b>
+                <span>ما تحب، ما تكره، أحلامك</span>
+              </div>
+              <div class="tl-control">مفتوح 👁️</div>
+            </div>
+
+            <div class="trust-level">
+              <div class="tl-num t2">٢</div>
+              <div class="tl-info">
+                <b>تجارب وقصص أعمق</b>
+                <span>حكايات من حياتك الخاصة</span>
+              </div>
+              <div class="tl-control">مقفول</div>
+            </div>
+
+            <div class="trust-level">
+              <div class="tl-num t3">٣</div>
+              <div class="tl-info">
+                <b>محادثة مباشرة</b>
+                <span>رسائل نصية وصوتية</span>
+              </div>
+              <div class="tl-control">مقفول</div>
+            </div>
+
+            <div class="trust-level">
+              <div class="tl-num t4">٤</div>
+              <div class="tl-info">
+                <b>كشف الهوية</b>
+                <span>اسمك، صورتك (اختياري)</span>
+              </div>
+              <div class="tl-control">مقفول</div>
+            </div>
+
+            <div class="trust-note">كل قرار كشف طوعي. تقدر ترجع عنه في أي وقت.</div>
+          </div>
+          <div class="navbar"><div class="nav-icon"></div><div class="nav-icon"></div><div class="nav-icon active"></div><div class="nav-icon"></div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SCREEN 4: يوتوبيا -->
+    <div class="phone-block">
+      <div class="eyebrow"><b>04</b> — يوتوبيا (منطقة جماعية)</div>
+      <div class="phone">
+        <div class="screen">
+          <div class="notch"></div>
+          <div class="statusbar">
+            <span>٩:٤١</span>
+            <span style="display:flex; gap:5px;"><span class="sb-dot"></span><span class="sb-dot"></span><span class="sb-dot"></span></span>
+          </div>
+          <div class="screen-body">
+            <div class="utopia-head display">يوتوبيا جديدة</div>
+            <div class="utopia-sub">مساحة جماعية بين ٣ أصوات فأكثر. لازم كل الأعضاء يكونوا موافقين.</div>
+
+            <div class="members-grid">
+              <div class="member-badge">
+                <div class="member-icon">١</div>
+                <div class="member-label">صوت #128</div>
+              </div>
+              <div class="member-badge">
+                <div class="member-icon">٢</div>
+                <div class="member-label">صوت #305</div>
+              </div>
+              <div class="member-badge">
+                <div class="member-icon">٣</div>
+                <div class="member-label">صوت #742</div>
+              </div>
+            </div>
+
+            <div class="requirements">
+              <div class="req-title">الشروط المستوفاة:</div>
+              <div class="req-item"><span class="req-icon">✓</span>تفاعل سابق بين الجميع</div>
+              <div class="req-item"><span class="req-icon">✓</span>تعليقات متبادلة</div>
+              <div class="req-item"><span class="req-icon">✓</span>موافقات متبادلة</div>
+              <div class="req-item"><span class="req-icon">⏳</span>بانتظار موافقة صوت #742</div>
+            </div>
+
+            <div style="font-size:10px; color:var(--text-dim); margin-bottom:10px; line-height:1.6;">لو رفض شخص واحد، مش هتتشكل المنطقة. الجميع لازم يوافقوا.</div>
+            <div class="utopia-cta">اطلب منهم الموافقة</div>
+          </div>
+          <div class="navbar"><div class="nav-icon"></div><div class="nav-icon"></div><div class="nav-icon"></div><div class="nav-icon active"></div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SCREEN 5: المحادثة (المستوى ٣) -->
+    <div class="phone-block">
+      <div class="eyebrow"><b>05</b> — محادثة مباشرة (مستوى ٣)</div>
+      <div class="phone">
+        <div class="screen">
+          <div class="notch"></div>
+          <div class="statusbar">
+            <span>٩:٤١</span>
+            <span style="display:flex; gap:5px;"><span class="sb-dot"></span><span class="sb-dot"></span><span class="sb-dot"></span></span>
+          </div>
+          <div class="screen-body">
+            <div class="chat-banner">مستوى ٣ مفتوح — محادثة مباشرة (لسه مجهول)</div>
+            
+            <div class="chat-col">
+              <div class="bubble them">شكراً إنك فتحت المستوى دا. كنت خايف أتكلم عن حاجات معينة بسبب الخوف من الحكم.</div>
+              <div class="bubble me">أنا برضو. مع صوتك هنا حسيت بأمان. تقدر تقول أي حاجة بدون خوف.</div>
+              <div class="bubble them">الجملة دي لوحدها كافية. شكراً 🤍</div>
+              <div class="bubble me">في أي وقت. مش روح اعرف هويتك لو ما بتحبّ، وده أصلاً مش الأهم هنا.</div>
+            </div>
+          </div>
+          <div class="navbar"><div class="nav-icon"></div><div class="nav-icon"></div><div class="nav-icon"></div><div class="nav-icon"></div></div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="legend">
+    <div class="legend-title">المراحل الثلاث</div>
+    <div class="legend-row">
+      <div class="legend-item">🏛️ المدينة الفاضلة</div>
+      <div class="legend-item">🔗 الاقتران</div>
+      <div class="legend-item">🌍 يوتوبيا</div>
+    </div>
+  </div>
+
+</body>
+</html>
