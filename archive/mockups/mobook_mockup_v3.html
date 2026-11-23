@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MoBoOk — تصميم مبدئي v3</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lalezar&family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#12151C;
+    --surface:#1B2029;
+    --surface-soft:#262C38;
+    --paper:#F6F4EF;
+    --paper-dim:#EAE7E0;
+    --text-dim:#9AA3B5;
+
+    --locked:#3A4150;
+    --tier1:#4FD1C5;
+    --tier2:#7C9EFF;
+    --tier3:#B083F0;
+    --tier4:#F2B84B;
+
+    --mood-joy:#E9A23B;
+    --mood-calm:#5FAE82;
+    --mood-sad:#5E80AE;
+  }
+
+  *{box-sizing:border-box; margin:0; padding:0;}
+
+  body{
+    background:var(--ink);
+    color:var(--paper);
+    font-family:'IBM Plex Sans Arabic', Tahoma, sans-serif;
+    overflow-x:hidden;
+  }
+  .display{font-family:'Lalezar','IBM Plex Sans Arabic',sans-serif; font-weight:400;}
+
+  /* ---------- HERO ---------- */
+  .hero{position:relative; padding:64px 24px 50px; text-align:center;}
+
+  .ringmark-hero{display:block; margin:0 auto 26px;}
+  .ringmark-hero .ring{fill:none; stroke-width:6px;}
+  .ringmark-hero .r1{animation:lit1 9s ease-in-out infinite;}
+  .ringmark-hero .r2{animation:lit2 9s ease-in-out infinite;}
+  .ringmark-hero .r3{animation:lit3 9s ease-in-out infinite;}
+  .ringmark-hero .r4{animation:lit4 9s ease-in-out infinite; stroke-width:5px; opacity:.85;}
+  .ringmark-hero .core{fill:#070809;}
+  .ringmark-hero .core-glow{fill:var(--surface-soft); opacity:.5; animation:pulseGlow 4.5s ease-in-out infinite;}
+
+  @keyframes pulseGlow{0%,100%{r:20;opacity:.35;} 50%{r:24;opacity:.55;}}
+  @keyframes lit1{0%,100%{stroke:var(--locked);} 8%,26%{stroke:var(--tier1);}}
+  @keyframes lit2{0%,100%{stroke:var(--locked);} 30%,48%{stroke:var(--tier2);}}
+  @keyframes lit3{0%,100%{stroke:var(--locked);} 52%,70%{stroke:var(--tier3);}}
+  @keyframes lit4{0%,100%{stroke:var(--locked);} 74%,92%{stroke:var(--tier4);}}
+
+  .eyebrow-top{
+    display:inline-block; font-size:13px; letter-spacing:.05em; color:var(--text-dim);
+    border:1px solid var(--surface-soft); border-radius:999px; padding:6px 16px; margin-bottom:18px;
+  }
+  .hero h1{font-size:50px; line-height:1; margin-bottom:8px;}
+  .hero h2{font-size:22px; font-weight:600; margin-bottom:14px;}
+  .hero p{max-width:520px; margin:0 auto; color:var(--text-dim); font-size:15.5px; line-height:1.85;}
+
+  /* ---------- PHONES ---------- */
+  .phones-row{display:flex; gap:28px; overflow-x:auto; scroll-snap-type:x mandatory; padding:8px 24px 40px; scrollbar-width:none;}
+  .phones-row::-webkit-scrollbar{display:none;}
+  .phone-block{flex:0 0 auto; width:300px; scroll-snap-align:center;}
+  .eyebrow{font-size:13px; color:var(--text-dim); letter-spacing:.04em; margin-bottom:10px; padding-right:4px;}
+  .eyebrow b{color:var(--paper); font-weight:700;}
+
+  .phone{width:300px; height:624px; background:#0A0C11; border-radius:38px; padding:14px;
+    box-shadow:0 30px 60px -20px rgba(0,0,0,.6), 0 0 0 1px var(--surface-soft);}
+  .screen{width:100%; height:100%; background:var(--paper); border-radius:26px; overflow:hidden; position:relative;
+    display:flex; flex-direction:column; color:#23262E;}
+  .notch{position:absolute; top:8px; left:50%; transform:translateX(-50%); width:70px; height:18px; background:#0A0C11; border-radius:12px; z-index:5;}
+  .statusbar{display:flex; justify-content:space-between; align-items:center; padding:14px 22px 4px; font-size:12px; font-weight:600;}
+  .statusbar .icons{display:flex; gap:5px; align-items:center;}
+  .sb-dot{width:5px; height:5px; border-radius:50%; background:#23262E;}
+  .screen-body{flex:1; padding:14px 18px 0; overflow:hidden;}
+  .navbar{display:flex; justify-content:space-around; align-items:center; padding:12px 0 18px; border-top:1px solid var(--paper-dim); margin-top:auto;}
+  .nav-icon{width:22px; height:22px; border-radius:7px; background:var(--paper-dim);}
+  .nav-icon.active{background:var(--ink);}
+
+  /* small ring icon = anonymous voice mark */
+  .vmark{flex-shrink:0;}
+  .vmark .vcore{fill:#23262E;}
+
+  /* ---------- SCREEN 1: FEED ---------- */
+  .feed-top{display:flex; align-items:center; margin-bottom:6px;}
+  .logo-mini{font-family:'Lalezar'; font-size:18px;}
+  .feed-tagline{font-size:10.5px; color:#8B8578; margin:2px 0 14px;}
+
+  .post{background:var(--paper-dim); border-radius:14px; padding:11px 13px; margin-bottom:10px;}
+  .post-head{display:flex; align-items:center; gap:8px; margin-bottom:6px;}
+  .post-head .voice{font-size:12px; font-weight:700;}
+  .post-head .time{font-size:10px; color:#9b9488; margin-right:auto;}
+  .mood-dot{width:7px; height:7px; border-radius:50%; margin-right:4px;}
+  .post p{font-size:12px; line-height:1.65;}
+  .post-actions{display:flex; gap:14px; margin-top:8px; font-size:10.5px; color:#6B6478;}
+  .comments-preview{margin-top:9px; padding-top:8px; border-top:1px dashed #D9D4C7;}
+  .comment{font-size:10.5px; line-height:1.6; margin-bottom:5px; color:#4A4640;}
+  .comment .c-voice{font-weight:700; color:#23262E;}
+  .comment.pending{color:#9b9488; font-style:italic; border:1px dashed #C9C3B3; border-radius:8px; padding:4px 7px;}
+
+  /* ---------- SCREEN 2: ZONE SETTINGS ---------- */
+  .zone-head{font-family:'Lalezar'; font-size:24px; margin:8px 0 2px;}
+  .zone-sub{font-size:11.5px; color:#8B8578; margin-bottom:16px; line-height:1.6;}
+  .level-row{display:flex; align-items:center; gap:11px; background:var(--paper-dim); border-radius:14px; padding:11px 12px; margin-bottom:9px;}
+  .level-ring{width:30px; height:30px; flex-shrink:0;}
+  .level-info{flex:1;}
+  .level-info b{font-size:12px; display:block;}
+  .level-info span{font-size:10px; color:#9b9488;}
+  .level-edit{font-size:10px; font-weight:700; color:#23262E; opacity:.5;}
+  .zone-note{font-size:10px; color:#9b9488; margin-top:6px; line-height:1.6;}
+
+  /* ---------- SCREEN 3: MUTUAL REQUEST ---------- */
+  .req-title{font-family:'Lalezar'; font-size:20px; margin:14px 0 6px; line-height:1.4;}
+  .req-sub{font-size:11.5px; color:#8B8578; margin-bottom:24px; line-height:1.7;}
+  .req-pair{display:flex; align-items:center; justify-content:center; gap:18px; margin-bottom:24px;}
+  .req-link{flex:1; height:2px; background:repeating-linear-gradient(to left, var(--locked) 0 6px, transparent 6px 12px); max-width:60px;}
+  .req-btns{display:flex; gap:10px;}
+  .req-btn{flex:1; text-align:center; padding:12px; border-radius:14px; font-size:13px; font-weight:700;}
+  .req-accept{background:var(--tier1); color:#0A0C11;}
+  .req-decline{background:var(--paper-dim); color:#6B6478;}
+  .req-note{text-align:center; font-size:10px; color:#9b9488; margin-top:16px;}
+
+  /* ---------- SCREEN 4: TRUST RINGS ---------- */
+  .trust-head{font-family:'Lalezar'; font-size:20px; margin:8px 0 18px; text-align:center;}
+  .trust-svg-wrap{display:flex; justify-content:center; margin-bottom:18px;}
+  .trust-cols{display:flex; gap:14px; margin-bottom:16px;}
+  .trust-col{flex:1;}
+  .trust-col-title{font-size:10.5px; font-weight:700; color:#6B6478; margin-bottom:8px;}
+  .trust-levels{display:flex; flex-direction:column; gap:8px;}
+  .trust-level{display:flex; align-items:center; gap:7px; font-size:10.5px;}
+  .tl-dot{width:10px; height:10px; border-radius:50%; flex-shrink:0;}
+  .tl-status{margin-right:auto; font-size:10px; color:#9b9488;}
+  .trust-cta{background:var(--ink); color:var(--paper); border-radius:14px; padding:12px; text-align:center; font-size:12.5px; font-weight:600;}
+  .trust-cta-note{text-align:center; font-size:10px; color:#9b9488; margin-top:8px;}
+
+  /* ---------- SCREEN 6: GROUP ZONE ---------- */
+  .group-member{display:flex; align-items:center; gap:11px; background:var(--paper-dim); border-radius:14px; padding:11px 12px; margin-bottom:9px;}
+  .group-member .voice{font-size:12px; font-weight:700;}
+  .gm-status{margin-right:auto; font-size:10.5px; font-weight:700;}
+  .gm-status.ok{color:#3FA98E;}
+  .gm-status.pending{color:#9b9488; font-weight:500;}
+
+  /* ---------- SCREEN 5: CHAT ---------- */
+  .chat-banner{background:var(--surface-soft); color:var(--paper); font-size:10.5px; text-align:center; padding:8px; border-radius:10px; margin-bottom:14px;}
+  .bubble{max-width:78%; padding:10px 13px; border-radius:14px; font-size:12px; line-height:1.6; margin-bottom:10px;}
+  .bubble.them{background:var(--paper-dim); align-self:flex-start; border-bottom-right-radius:3px;}
+  .bubble.me{background:var(--ink); color:var(--paper); align-self:flex-end; margin-right:auto; border-bottom-left-radius:3px;}
+  .chat-col{display:flex; flex-direction:column;}
+  .chat-voice-label{font-size:10px; color:#9b9488; margin-bottom:4px;}
+
+  /* ---------- FOOTER ---------- */
+  .legend{padding:10px 24px 70px; text-align:center;}
+  .legend-title{font-size:13px; color:var(--text-dim); margin-bottom:16px; letter-spacing:.04em;}
+  .legend-row{display:flex; justify-content:center; gap:20px; flex-wrap:wrap;}
+  .legend-item{display:flex; align-items:center; gap:7px; font-size:12.5px; color:var(--paper);}
+  .legend-dot{width:13px; height:13px; border-radius:50%;}
+
+  @media (max-width:380px){
+    .phone{width:264px; height:560px;}
+    .phone-block{width:264px;}
+  }
+</style>
+</head>
+<body>
+
+  <section class="hero">
+    <div class="eyebrow-top">تصميم مبدئي v3 — مساحة مجهولة الهوية</div>
+
+    <svg class="ringmark-hero" width="220" height="220" viewBox="0 0 220 220">
+      <circle class="core-glow" cx="110" cy="110" r="22"/>
+      <circle class="core" cx="110" cy="110" r="14"/>
+      <circle class="ring r1" cx="110" cy="110" r="34"/>
+      <circle class="ring r2" cx="110" cy="110" r="56"/>
+      <circle class="ring r3" cx="110" cy="110" r="78"/>
+      <circle class="ring r4" cx="110" cy="110" r="98"/>
+    </svg>
+
+    <h1 class="display">MoBoOk</h1>
+    <h2>محدّش يعرف عنك حاجة... إلا لو سمحت بنفسك</h2>
+    <p>مساحة فضفضة حرة، من غير قلق على هويتك، معتقداتك، أو رأيك. الخصوصية هنا مش زرار إعدادات — هي قرار بتاخده إنت، حلقة بحلقة، وبموافقة الطرف التاني دايمًا.</p>
+  </section>
+
+  <div class="phones-row">
+
+    <!-- SCREEN 1: PUBLIC VOICES FEED -->
+    <div class="phone-block">
+      <div class="eyebrow"><b>01</b> — الفيد العام (كل الأصوات)</div>
+      <div class="phone">
+        <div class="screen">
+          <div class="notch"></div>
+          <div class="statusbar"><span>٩:٤١</span><span class="icons"><span class="sb-dot"></span><span class="sb-dot"></span><span class="sb-dot"></span></span></div>
+          <div class="screen-body">
+            <div class="feed-top"><span class="logo-mini">MoBoOk</span></div>
+            <div class="feed-tagline">كل البوستات تظهر للكل — بس التعليقات تظهر بعد موافقة صاحب الصوت</div>
+
+            <div class="post">
+              <div class="post-head">
+                <svg class="vmark" width="22" height="22" viewBox="0 0 22 22"><circle class="vcore" cx="11" cy="11" r="4"/><circle cx="11" cy="11" r="8" fill="none" stroke="#7C9EFF" stroke-width="2.5"/></svg>
+                <span class="voice">صوت #214</span>
+                <span class="mood-dot" style="background:var(--mood-calm)"></span>
+                <span class="time">منذ ١٢ د</span>
+              </div>
+              <p>بقالي وقت حاسس إن في رأي عندي مش قادر أقوله لحد قريب مني. مش لأنه غلط، بس خايف أتحكم عليه. هنا حسيت قدرت أكتبه أول مرة.</p>
+              <div class="post-actions"><span>💛 دعم</span><span>١٤ دعموا</span><span style="margin-right:auto">🔗 اطلب اقتران منطقة</span></div>
+              <div class="comments-preview">
+                <div class="comment"><span class="c-voice">صوت #390:</span> حسيت زيك تمامًا، شكرًا إنك كتبتها</div>
+                <div class="comment pending">تعليق من صوت #12 — في انتظار موافقتك</div>
+              </div>
+            </div>
+
+            <div class="post">
+              <div class="post-head">
+                <svg class="vmark" width="22" height="22" viewBox="0 0 22 22"><circle class="vcore" cx="11" cy="11" r="4"/><circle cx="11" cy="11" r="8" fill="none" stroke="#B083F0" stroke-width="2.5"/></svg>
+                <span class="voice">صوت #77</span>
+                <span class="mood-dot" style="background:var(--mood-sad)"></span>
+                <span class="time">منذ ساعة</span>
+              </div>
+              <p>نفسي حد يسمعني من غير ما يحاول يعرف أنا مين بالظبط. بس عايز أعرف إن مش غريب اللي أحسه.</p>
+              <div class="post-actions"><span>💛 دعم</span><span>٦ دعموا</span><span style="margin-right:auto">🔗 اطلب اقتران منطقة</span></div>
+            </div>
+          </div>
+          <div class="navbar"><div class="nav-icon active"></div><div class="nav-icon"></div><div class="nav-icon"></div><div class="nav-icon"></div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SCREEN 2: ZONE SETTINGS -->
+    <div class="phone-block">
+      <div class="eyebrow"><b>02</b> — تحديد مستويات منطقتك</div>
+      <div class="phone">
+        <div class="screen">
+          <div class="notch"></div>
+          <div class="statusbar"><span>٩:٤١</span><span class="icons"><span class="sb-dot"></span><span class="sb-dot"></span><span class="sb-dot"></span></span></div>
+          <div class="screen-body">
+            <div class="zone-head display">منطقتك الشخصية</div>
+            <div class="zone-sub">إنت اللي تحدد كل مستوى هيفتح إيه — مفيش حد يشوف حاجة من غير موافقتك</div>
+
+            <div class="level-row">
+              <svg class="level-ring" viewBox="0 0 30 30"><circle cx="15" cy="15" r="5" fill="#EAE7E0"/><circle cx="15" cy="15" r="11" fill="none" stroke="var(--tier1)" stroke-width="3"/></svg>
+              <div class="level-info"><b>المستوى ١</b><span>اهتمامات ونوع كلام عام</span></div>
+              <div class="level-edit">تعديل</div>
+            </div>
+            <div class="level-row">
+              <svg class="level-ring" viewBox="0 0 30 30"><circle cx="15" cy="15" r="5" fill="#EAE7E0"/><circle cx="15" cy="15" r="11" fill="none" stroke="var(--tier2)" stroke-width="3"/></svg>
+              <div class="level-info"><b>المستوى ٢</b><span>قصص وتفاصيل أعمق</span></div>
+              <div class="level-edit">تعديل</div>
+            </div>
+            <div class="level-row">
+              <svg class="level-ring" viewBox="0 0 30 30"><circle cx="15" cy="15" r="5" fill="#EAE7E0"/><circle cx="15" cy="15" r="11" fill="none" stroke="var(--tier3)" stroke-width="3"/></svg>
+              <div class="level-info"><b>المستوى ٣</b><span>تواصل مباشر مشفّر</span></div>
+              <div class="level-edit">تعديل</div>
+            </div>
+            <div class="level-row">
+              <svg class="level-ring" viewBox="0 0 30 30"><circle cx="15" cy="15" r="5" fill="#EAE7E0"/><circle cx="15" cy="15" r="11" fill="none" stroke="var(--tier4)" stroke-width="3"/></svg>
+              <div class="level-info"><b>المستوى ٤</b><span>هويتك الحقيقية</span></div>
+              <div class="level-edit">تعديل</div>
+            </div>
+            <div class="zone-note">كل مستوى محتاج موافقتك في كل مرة، حتى لو فتحته لحد قبل كده</div>
+          </div>
+          <div class="navbar"><div class="nav-icon"></div><div class="nav-icon active"></div><div class="nav-icon"></div><div class="nav-icon"></div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SCREEN 3: ZONE PAIRING REQUEST -->
+    <div class="phone-block">
+      <div class="eyebrow"><b>03</b> — طلب اقتران منطقة (عرض متبادل)</div>
+      <div class="phone">
+        <div class="screen">
+          <div class="notch"></div>
+          <div class="statusbar"><span>٩:٤١</span><span class="icons"><span class="sb-dot"></span><span class="sb-dot"></span><span class="sb-dot"></span></span></div>
+          <div class="screen-body">
+            <div class="req-title display">صوت #58 عايز تكونوا في منطقة بعض</div>
+            <div class="req-sub">ده عرض متبادل: لو وافقت، انت كمان بتفتح له منطقتك — مش طلب من طرف واحد بس.</div>
+
+            <div class="req-pair">
+              <svg width="50" height="50" viewBox="0 0 50 50"><circle cx="25" cy="25" r="8" fill="var(--ink)"/><circle cx="25" cy="25" r="16" fill="none" stroke="var(--tier1)" stroke-width="3"/></svg>
+              <div class="req-link"></div>
+              <svg width="50" height="50" viewBox="0 0 50 50"><circle cx="25" cy="25" r="8" fill="var(--ink)"/><circle cx="25" cy="25" r="16" fill="none" stroke="var(--locked)" stroke-width="3"/></svg>
+            </div>
+
+            <div class="req-btns">
+              <div class="req-btn req-accept">قبول</div>
+              <div class="req-btn req-decline">رفض</div>
+            </div>
+            <div class="req-note">تقدر تسحب موافقتك في أي وقت بعد كده</div>
+          </div>
+          <div class="navbar"><div class="nav-icon"></div><div class="nav-icon"></div><div class="nav-icon active"></div><div class="nav-icon"></div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SCREEN 4: TRUST RINGS -->
+    <div class="phone-block">
+      <div class="eyebrow"><b>04</b> — حلقات الثقة مع صوت معيّن</div>
+      <div class="phone">
+        <div class="screen">
+          <div class="notch"></div>
+          <div class="statusbar"><span>٩:٤١</span><span class="icons"><span class="sb-dot"></span><span class="sb-dot"></span><span class="sb-dot"></span></span></div>
+          <div class="screen-body">
+            <div class="trust-head display">علاقتك مع صوت #58</div>
+            <div class="trust-svg-wrap">
+              <svg width="140" height="140" viewBox="0 0 140 140">
+                <circle cx="70" cy="70" r="10" fill="#23262E"/>
+                <circle cx="70" cy="70" r="22" fill="none" stroke="var(--tier1)" stroke-width="6"/>
+                <circle cx="70" cy="70" r="38" fill="none" stroke="var(--tier2)" stroke-width="6"/>
+                <circle cx="70" cy="70" r="54" fill="none" stroke="var(--locked)" stroke-width="6"/>
+                <circle cx="70" cy="70" r="68" fill="none" stroke="var(--locked)" stroke-width="5" opacity=".7"/>
+              </svg>
+            </div>
+            <div class="trust-cols">
+              <div class="trust-col">
+                <div class="trust-col-title">إنت فاتح له</div>
+                <div class="trust-levels">
+                  <div class="trust-level"><span class="tl-dot" style="background:var(--tier1)"></span>مستوى ١<span class="tl-status">✓</span></div>
+                  <div class="trust-level"><span class="tl-dot" style="background:var(--tier2)"></span>مستوى ٢<span class="tl-status">✓</span></div>
+                  <div class="trust-level"><span class="tl-dot" style="background:var(--locked)"></span>مستوى ٣<span class="tl-status">مقفول</span></div>
+                </div>
+              </div>
+              <div class="trust-col">
+                <div class="trust-col-title">هو فاتح لك</div>
+                <div class="trust-levels">
+                  <div class="trust-level"><span class="tl-dot" style="background:var(--tier1)"></span>مستوى ١<span class="tl-status">✓</span></div>
+                  <div class="trust-level"><span class="tl-dot" style="background:var(--locked)"></span>مستوى ٢<span class="tl-status">مقفول</span></div>
+                  <div class="trust-level"><span class="tl-dot" style="background:var(--locked)"></span>مستوى ٣<span class="tl-status">مقفول</span></div>
+                </div>
+              </div>
+            </div>
+            <div class="trust-cta">افتح المستوى التالت من منطقتك له</div>
+            <div class="trust-cta-note">القرار ده ليك بس — مش محتاج موافقته، هو اللي يقرر هو إمتى يفتح أكتر</div>
+          </div>
+          <div class="navbar"><div class="nav-icon"></div><div class="nav-icon"></div><div class="nav-icon active"></div><div class="nav-icon"></div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SCREEN 5: UNLOCKED CHAT -->
+    <div class="phone-block">
+      <div class="eyebrow"><b>05</b> — تواصل مباشر بعد الفتح المتبادل</div>
+      <div class="phone">
+        <div class="screen">
+          <div class="notch"></div>
+          <div class="statusbar"><span>٩:٤١</span><span class="icons"><span class="sb-dot"></span><span class="sb-dot"></span><span class="sb-dot"></span></span></div>
+          <div class="screen-body">
+            <div class="chat-banner">المستوى ٣ مفتوح — تواصل مباشر مشفّر، لسه بدون أسماء</div>
+            <div class="chat-col">
+              <div class="chat-voice-label">صوت #58</div>
+              <div class="bubble them">مبسوط إنك وافقت نكمل. حابب أعرف، إنت ليه حاسس إنك محتاج مساحة زي دي؟</div>
+              <div class="bubble me">زمان كنت خايف أتكلم عن حاجات تخصني حتى مع نفسي. هنا حسيت لأول مرة إن صوتي بيتسمع من غير حكم.</div>
+              <div class="chat-voice-label">صوت #58</div>
+              <div class="bubble them">فاهمك. ده بالظبط سبب وجودي هنا برضو 🤍</div>
+            </div>
+          </div>
+          <div class="navbar"><div class="nav-icon"></div><div class="nav-icon"></div><div class="nav-icon"></div><div class="nav-icon active"></div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SCREEN 6: GROUP ZONE -->
+    <div class="phone-block">
+      <div class="eyebrow"><b>06</b> — منطقة جماعية (موافقة الكل)</div>
+      <div class="phone">
+        <div class="screen">
+          <div class="notch"></div>
+          <div class="statusbar"><span>٩:٤١</span><span class="icons"><span class="sb-dot"></span><span class="sb-dot"></span><span class="sb-dot"></span></span></div>
+          <div class="screen-body">
+            <div class="zone-head display">منطقة "أصحاب الموجة الهادية"</div>
+            <div class="zone-sub">٤ أصوات عايزين يكونوا في منطقة بعض — المنطقة دي تتفعّل بس لو كل الأطراف موافقين</div>
+
+            <div class="group-member">
+              <svg class="vmark" width="22" height="22" viewBox="0 0 22 22"><circle class="vcore" cx="11" cy="11" r="4"/><circle cx="11" cy="11" r="8" fill="none" stroke="#7C9EFF" stroke-width="2.5"/></svg>
+              <span class="voice">صوت #214</span>
+              <span class="gm-status ok">موافق ✓</span>
+            </div>
+            <div class="group-member">
+              <svg class="vmark" width="22" height="22" viewBox="0 0 22 22"><circle class="vcore" cx="11" cy="11" r="4"/><circle cx="11" cy="11" r="8" fill="none" stroke="#B083F0" stroke-width="2.5"/></svg>
+              <span class="voice">صوت #77</span>
+              <span class="gm-status ok">موافق ✓</span>
+            </div>
+            <div class="group-member">
+              <svg class="vmark" width="22" height="22" viewBox="0 0 22 22"><circle class="vcore" cx="11" cy="11" r="4"/><circle cx="11" cy="11" r="8" fill="none" stroke="#4FD1C5" stroke-width="2.5"/></svg>
+              <span class="voice">صوت #305</span>
+              <span class="gm-status ok">موافق ✓</span>
+            </div>
+            <div class="group-member">
+              <svg class="vmark" width="22" height="22" viewBox="0 0 22 22"><circle class="vcore" cx="11" cy="11" r="4"/><circle cx="11" cy="11" r="8" fill="none" stroke="var(--locked)" stroke-width="2.5"/></svg>
+              <span class="voice">صوت #58</span>
+              <span class="gm-status pending">في الانتظار...</span>
+            </div>
+
+            <div class="zone-note">لسه ناقص موافقة صوت واحد عشان المنطقة تتفعّل لكل الأربعة</div>
+          </div>
+          <div class="navbar"><div class="nav-icon"></div><div class="nav-icon"></div><div class="nav-icon"></div><div class="nav-icon active"></div></div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="legend">
+    <div class="legend-title">مستويات الثقة</div>
+    <div class="legend-row">
+      <div class="legend-item"><span class="legend-dot" style="background:var(--locked)"></span>مقفول</div>
+      <div class="legend-item"><span class="legend-dot" style="background:var(--tier1)"></span>مستوى ١</div>
+      <div class="legend-item"><span class="legend-dot" style="background:var(--tier2)"></span>مستوى ٢</div>
+      <div class="legend-item"><span class="legend-dot" style="background:var(--tier3)"></span>مستوى ٣</div>
+      <div class="legend-item"><span class="legend-dot" style="background:var(--tier4)"></span>مستوى ٤ (الهوية)</div>
+    </div>
+  </div>
+
+</body>
+                                </html>
