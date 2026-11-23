@@ -1,0 +1,565 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MoBoOk — تصميم مبدئي</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lalezar&family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#1B1626;
+    --surface:#2A2235;
+    --surface-soft:#352B43;
+    --paper:#FBF7F0;
+    --paper-dim:#F1EBDF;
+    --text-dim:#C9BFD6;
+
+    --joy:#FFB84D;
+    --calm:#6FCF97;
+    --sad:#6C8EBF;
+    --anxious:#C97FE0;
+    --fire:#E2614B;
+  }
+
+  *{box-sizing:border-box; margin:0; padding:0;}
+
+  body{
+    background:var(--ink);
+    color:var(--paper);
+    font-family:'IBM Plex Sans Arabic', Tahoma, sans-serif;
+    overflow-x:hidden;
+  }
+
+  .display{
+    font-family:'Lalezar', 'IBM Plex Sans Arabic', sans-serif;
+    font-weight:400;
+  }
+
+  /* ---------- HERO ---------- */
+
+  .hero{
+    position:relative;
+    padding:64px 24px 56px;
+    text-align:center;
+    overflow:hidden;
+  }
+
+  .blob-stage{
+    position:relative;
+    width:220px;
+    height:220px;
+    margin:0 auto 28px;
+  }
+
+  .blob{
+    position:absolute;
+    inset:0;
+    border-radius:42% 58% 64% 36% / 48% 42% 58% 52%;
+    filter:blur(0.5px);
+    animation:morph 9s ease-in-out infinite, breathe 6s ease-in-out infinite;
+    mix-blend-mode:normal;
+  }
+  .blob.b1{background:radial-gradient(circle at 30% 30%, var(--joy), transparent 70%); opacity:.9;}
+  .blob.b2{background:radial-gradient(circle at 70% 35%, var(--calm), transparent 70%); animation-delay:-3s; opacity:.85;}
+  .blob.b3{background:radial-gradient(circle at 50% 70%, var(--sad), transparent 70%); animation-delay:-6s; opacity:.8;}
+
+  @keyframes morph{
+    0%,100%{border-radius:42% 58% 64% 36% / 48% 42% 58% 52%;}
+    33%{border-radius:58% 42% 38% 62% / 62% 55% 45% 38%;}
+    66%{border-radius:48% 52% 58% 42% / 40% 60% 40% 60%;}
+  }
+  @keyframes breathe{
+    0%,100%{transform:scale(1);}
+    50%{transform:scale(1.06);}
+  }
+
+  .eyebrow-top{
+    display:inline-block;
+    font-size:13px;
+    letter-spacing:.05em;
+    color:var(--text-dim);
+    border:1px solid var(--surface-soft);
+    border-radius:999px;
+    padding:6px 16px;
+    margin-bottom:18px;
+  }
+
+  .hero h1{
+    font-size:54px;
+    line-height:1;
+    margin-bottom:10px;
+    color:var(--paper);
+  }
+  .hero h2{
+    font-size:24px;
+    font-weight:600;
+    color:var(--paper);
+    margin-bottom:14px;
+  }
+  .hero p{
+    max-width:520px;
+    margin:0 auto;
+    color:var(--text-dim);
+    font-size:16px;
+    line-height:1.8;
+  }
+
+  /* ---------- PHONES SECTION ---------- */
+
+  .phones-row{
+    display:flex;
+    gap:28px;
+    overflow-x:auto;
+    scroll-snap-type:x mandatory;
+    padding:8px 24px 40px;
+    scrollbar-width:none;
+  }
+  .phones-row::-webkit-scrollbar{display:none;}
+
+  .phone-block{
+    flex:0 0 auto;
+    width:300px;
+    scroll-snap-align:center;
+  }
+
+  .eyebrow{
+    font-size:13px;
+    color:var(--text-dim);
+    letter-spacing:.04em;
+    margin-bottom:10px;
+    padding-right:4px;
+  }
+  .eyebrow b{color:var(--paper); font-weight:700;}
+
+  .phone{
+    width:300px;
+    height:624px;
+    background:#100c18;
+    border-radius:38px;
+    padding:14px;
+    box-shadow:0 30px 60px -20px rgba(0,0,0,.6), 0 0 0 1px var(--surface-soft);
+  }
+
+  .screen{
+    width:100%;
+    height:100%;
+    background:var(--paper);
+    border-radius:26px;
+    overflow:hidden;
+    position:relative;
+    display:flex;
+    flex-direction:column;
+    color:#231C2E;
+  }
+
+  .notch{
+    position:absolute;
+    top:8px; left:50%;
+    transform:translateX(-50%);
+    width:70px; height:18px;
+    background:#100c18;
+    border-radius:12px;
+    z-index:5;
+  }
+
+  .statusbar{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    padding:14px 22px 4px;
+    font-size:12px;
+    font-weight:600;
+    color:#231C2E;
+  }
+  .statusbar .icons{display:flex; gap:5px; align-items:center;}
+  .sb-dot{width:5px;height:5px;border-radius:50%;background:#231C2E;}
+
+  .screen-body{
+    flex:1;
+    padding:14px 18px 0;
+    overflow:hidden;
+  }
+
+  .navbar{
+    display:flex;
+    justify-content:space-around;
+    align-items:center;
+    padding:12px 0 18px;
+    border-top:1px solid var(--paper-dim);
+    margin-top:auto;
+  }
+  .nav-icon{width:22px; height:22px; border-radius:7px; background:var(--paper-dim);}
+  .nav-icon.active{background:var(--ink);}
+
+  /* ---- mood mini blobs (used in check-in + avatars) ---- */
+  .mblob{
+    border-radius:42% 58% 64% 36% / 48% 42% 58% 52%;
+    display:flex; align-items:center; justify-content:center;
+  }
+  .mood-joy{background:var(--joy);}
+  .mood-calm{background:var(--calm);}
+  .mood-sad{background:var(--sad);}
+  .mood-anxious{background:var(--anxious);}
+  .mood-fire{background:var(--fire);}
+
+  /* ---------- SCREEN 1: CHECK-IN ---------- */
+  .checkin-title{
+    font-family:'Lalezar', sans-serif;
+    font-size:30px;
+    margin:10px 0 4px;
+  }
+  .checkin-sub{font-size:13px; color:#6B6478; margin-bottom:18px;}
+
+  .mood-grid{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:12px;
+  }
+  .mood-option{
+    display:flex; flex-direction:column; align-items:center; gap:7px;
+    padding:12px 0;
+    border-radius:18px;
+    border:2px solid transparent;
+  }
+  .mood-option.selected{
+    border-color:var(--calm);
+    background:#EFFBF3;
+  }
+  .mood-option .mblob{width:44px; height:44px;}
+  .mood-option span{font-size:13px; font-weight:600;}
+
+  .checkin-cta{
+    margin-top:16px;
+    background:var(--ink);
+    color:var(--paper);
+    border-radius:16px;
+    text-align:center;
+    padding:13px;
+    font-weight:600;
+    font-size:14px;
+  }
+  .checkin-note{
+    text-align:center; font-size:11px; color:#9b94a8; margin-top:10px;
+  }
+
+  /* ---------- SCREEN 2: FEED ---------- */
+  .feed-top{display:flex; align-items:center; justify-content:space-between; margin-bottom:4px;}
+  .logo-mini{font-family:'Lalezar'; font-size:18px;}
+  .mood-bar{
+    display:flex; height:7px; border-radius:5px; overflow:hidden; margin:10px 0 2px;
+  }
+  .mood-bar span{display:block; height:100%;}
+  .mood-bar-label{font-size:10px; color:#9b94a8; margin-bottom:12px;}
+
+  .post{
+    border-right:4px solid var(--calm);
+    background:var(--paper-dim);
+    border-radius:14px;
+    padding:11px 13px;
+    margin-bottom:10px;
+  }
+  .post.sad{border-color:var(--sad);}
+  .post.joy{border-color:var(--joy);}
+  .post-head{display:flex; align-items:center; gap:8px; margin-bottom:6px;}
+  .post-head .mblob{width:22px; height:22px;}
+  .post-head .name{font-size:12px; font-weight:700;}
+  .post-head .time{font-size:10px; color:#9b94a8; margin-right:auto;}
+  .post p{font-size:12.5px; line-height:1.6;}
+  .post-actions{display:flex; gap:14px; margin-top:8px; font-size:11px; color:#6B6478;}
+
+  /* ---------- SCREEN 3: CIRCLES ---------- */
+  .circles-head{font-family:'Lalezar'; font-size:24px; margin:8px 0 2px;}
+  .circles-sub{font-size:12px; color:#6B6478; margin-bottom:16px; line-height:1.6;}
+  .circle-card{
+    display:flex; align-items:center; gap:10px;
+    background:var(--paper-dim);
+    border-radius:16px;
+    padding:11px 13px;
+    margin-bottom:10px;
+  }
+  .circle-card .mblob{width:34px; height:34px; flex-shrink:0;}
+  .circle-card .info{flex:1;}
+  .circle-card .info b{font-size:12.5px; display:block;}
+  .circle-card .info span{font-size:10.5px; color:#9b94a8;}
+  .circle-card .join{
+    font-size:10.5px; font-weight:700;
+    background:var(--ink); color:var(--paper);
+    padding:6px 12px; border-radius:10px;
+  }
+
+  /* ---------- SCREEN 4: PROFILE ---------- */
+  .profile-head{display:flex; align-items:center; gap:12px; margin:6px 0 16px;}
+  .avatar-frame{
+    width:58px; height:58px;
+    border-radius:42% 58% 64% 36% / 48% 42% 58% 52%;
+    background:var(--calm);
+    display:flex; align-items:center; justify-content:center;
+    font-family:'Lalezar'; font-size:20px; color:#fff;
+  }
+  .profile-head .name{font-size:15px; font-weight:700;}
+  .profile-head .streak{font-size:11px; color:#9b94a8;}
+  .journal-label{font-size:12px; font-weight:700; margin-bottom:3px;}
+  .journal-note{font-size:10.5px; color:#9b94a8; margin-bottom:12px;}
+  .journal-grid{display:grid; grid-template-columns:repeat(7,1fr); gap:7px;}
+  .jday{width:22px; height:22px; border-radius:50%;}
+
+  /* ---------- SCREEN 5: SUPPORT ---------- */
+  .support-post{
+    border-right:4px solid var(--sad);
+    background:var(--paper-dim);
+    border-radius:16px;
+    padding:14px;
+    margin-top:10px;
+  }
+  .support-post .post-head{margin-bottom:10px;}
+  .support-post p{font-size:13px; line-height:1.7; margin-bottom:14px;}
+  .support-btn{
+    display:flex; align-items:center; justify-content:center; gap:8px;
+    background:var(--sad); color:#fff;
+    border-radius:14px; padding:11px;
+    font-size:13px; font-weight:700;
+  }
+  .support-count{
+    text-align:center; font-size:11px; color:#9b94a8; margin-top:10px;
+  }
+  .toast{
+    margin-top:16px;
+    background:var(--ink); color:var(--paper);
+    border-radius:12px; padding:10px;
+    text-align:center; font-size:11.5px;
+  }
+
+  /* ---------- FOOTER / LEGEND ---------- */
+  .legend{
+    padding:10px 24px 70px;
+    text-align:center;
+  }
+  .legend-title{font-size:13px; color:var(--text-dim); margin-bottom:16px; letter-spacing:.04em;}
+  .legend-row{
+    display:flex; justify-content:center; gap:22px; flex-wrap:wrap;
+  }
+  .legend-item{display:flex; align-items:center; gap:7px; font-size:13px; color:var(--paper);}
+  .legend-dot{width:14px; height:14px; border-radius:50%;}
+
+  @media (max-width:380px){
+    .phone{width:264px; height:560px;}
+    .phone-block{width:264px;}
+  }
+</style>
+</head>
+<body>
+
+  <section class="hero">
+    <div class="eyebrow-top">تصميم مبدئي — MoBoOk</div>
+    <div class="blob-stage">
+      <div class="blob b1"></div>
+      <div class="blob b2"></div>
+      <div class="blob b3"></div>
+    </div>
+    <h1 class="display">MoBoOk</h1>
+    <h2>إنت حاسس إيه دلوقتي؟</h2>
+    <p>تطبيق تواصل اجتماعي لأندرويد، نقطة دخوله مش "إيه اللي حصل" لكن "إنت حاسس بإيه" — المزاج هو اللي بيشكّل الفيد، المجتمعات، والتفاعل.</p>
+  </section>
+
+  <div class="phones-row">
+
+    <!-- SCREEN 1: CHECK-IN -->
+    <div class="phone-block">
+      <div class="eyebrow"><b>01</b> — أول ما تفتح التطبيق</div>
+      <div class="phone">
+        <div class="screen">
+          <div class="notch"></div>
+          <div class="statusbar">
+            <span>٩:٤١</span>
+            <span class="icons"><span class="sb-dot"></span><span class="sb-dot"></span><span class="sb-dot"></span></span>
+          </div>
+          <div class="screen-body">
+            <div class="checkin-title display">إزيك دلوقتي؟</div>
+            <div class="checkin-sub">اختار اللي يشبه حالتك أكتر</div>
+            <div class="mood-grid">
+              <div class="mood-option"><div class="mblob mood-joy"></div><span>فرحان</span></div>
+              <div class="mood-option selected"><div class="mblob mood-calm"></div><span>هادي</span></div>
+              <div class="mood-option"><div class="mblob mood-sad"></div><span>زعلان</span></div>
+              <div class="mood-option"><div class="mblob mood-anxious"></div><span>قلقان</span></div>
+              <div class="mood-option"><div class="mblob mood-fire"></div><span>متعصب</span></div>
+            </div>
+            <div class="checkin-cta">كمّل لمزاج هادي</div>
+            <div class="checkin-note">تقدر تغيّر مزاجك في أي وقت من البروفايل</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SCREEN 2: FEED -->
+    <div class="phone-block">
+      <div class="eyebrow"><b>02</b> — الفيد الرئيسي</div>
+      <div class="phone">
+        <div class="screen">
+          <div class="notch"></div>
+          <div class="statusbar">
+            <span>٩:٤١</span>
+            <span class="icons"><span class="sb-dot"></span><span class="sb-dot"></span><span class="sb-dot"></span></span>
+          </div>
+          <div class="screen-body">
+            <div class="feed-top"><span class="logo-mini">MoBoOk</span></div>
+            <div class="mood-bar">
+              <span style="width:40%; background:var(--calm)"></span>
+              <span style="width:25%; background:var(--joy)"></span>
+              <span style="width:20%; background:var(--sad)"></span>
+              <span style="width:15%; background:var(--anxious)"></span>
+            </div>
+            <div class="mood-bar-label">مود الناس حواليك النهاردة</div>
+
+            <div class="post sad">
+              <div class="post-head">
+                <div class="mblob mood-sad" style="width:22px;height:22px"></div>
+                <span class="name">ريم</span>
+                <span class="time">منذ ٢٠ د</span>
+              </div>
+              <p>حسيت النهاردة إني تعبت من المحاولة وحدي. مش عايز نصيحة، بس حسيت لازم أقولها.</p>
+              <div class="post-actions"><span>💛 إبعت دعم</span><span>٨ دعموا</span></div>
+            </div>
+
+            <div class="post joy">
+              <div class="post-head">
+                <div class="mblob mood-joy" style="width:22px;height:22px"></div>
+                <span class="name">كريم</span>
+                <span class="time">منذ ساعة</span>
+              </div>
+              <p>خلصت أول مشروع كبير لي! حاسس إني فخور بنفسي شوية 🌟</p>
+              <div class="post-actions"><span>💛 إبعت دعم</span><span>٢٣ دعموا</span></div>
+            </div>
+          </div>
+          <div class="navbar">
+            <div class="nav-icon active"></div><div class="nav-icon"></div><div class="nav-icon"></div><div class="nav-icon"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SCREEN 3: CIRCLES -->
+    <div class="phone-block">
+      <div class="eyebrow"><b>03</b> — دوائر المزاج</div>
+      <div class="phone">
+        <div class="screen">
+          <div class="notch"></div>
+          <div class="statusbar">
+            <span>٩:٤١</span>
+            <span class="icons"><span class="sb-dot"></span><span class="sb-dot"></span><span class="sb-dot"></span></span>
+          </div>
+          <div class="screen-body">
+            <div class="circles-head display">دوائر النهاردة</div>
+            <div class="circles-sub">مجتمعات بتتشكل وتنحل حسب مود الناس — مش لازم تكون صاحب حد فيها</div>
+
+            <div class="circle-card">
+              <div class="mblob mood-calm"></div>
+              <div class="info"><b>هادي النهاردة</b><span>٣١٢ شخص دلوقتي</span></div>
+              <div class="join">ادخل</div>
+            </div>
+            <div class="circle-card">
+              <div class="mblob mood-anxious"></div>
+              <div class="info"><b>زهقانين من الشغل</b><span>١٨٩ شخص دلوقتي</span></div>
+              <div class="join">ادخل</div>
+            </div>
+            <div class="circle-card">
+              <div class="mblob mood-joy"></div>
+              <div class="info"><b>متحمسين لحاجة جديدة</b><span>٩٤ شخص دلوقتي</span></div>
+              <div class="join">ادخل</div>
+            </div>
+          </div>
+          <div class="navbar">
+            <div class="nav-icon"></div><div class="nav-icon active"></div><div class="nav-icon"></div><div class="nav-icon"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SCREEN 4: PROFILE -->
+    <div class="phone-block">
+      <div class="eyebrow"><b>04</b> — البروفايل ويومية المزاج</div>
+      <div class="phone">
+        <div class="screen">
+          <div class="notch"></div>
+          <div class="statusbar">
+            <span>٩:٤١</span>
+            <span class="icons"><span class="sb-dot"></span><span class="sb-dot"></span><span class="sb-dot"></span></span>
+          </div>
+          <div class="screen-body">
+            <div class="profile-head">
+              <div class="avatar-frame">م</div>
+              <div>
+                <div class="name">مو.</div>
+                <div class="streak">🔥 ٧ أيام بتسجل مزاجك</div>
+              </div>
+            </div>
+            <div class="journal-label">يومية مزاجك</div>
+            <div class="journal-note">السجل ده خاص بيك بس، مش ظاهر لحد</div>
+            <div class="journal-grid">
+              <div class="jday" style="background:var(--calm)"></div>
+              <div class="jday" style="background:var(--joy)"></div>
+              <div class="jday" style="background:var(--calm)"></div>
+              <div class="jday" style="background:var(--sad)"></div>
+              <div class="jday" style="background:var(--calm)"></div>
+              <div class="jday" style="background:var(--anxious)"></div>
+              <div class="jday" style="background:var(--joy)"></div>
+              <div class="jday" style="background:var(--joy)"></div>
+              <div class="jday" style="background:var(--calm)"></div>
+              <div class="jday" style="background:var(--calm)"></div>
+              <div class="jday" style="background:var(--fire)"></div>
+              <div class="jday" style="background:var(--sad)"></div>
+              <div class="jday" style="background:var(--calm)"></div>
+              <div class="jday" style="background:var(--joy)"></div>
+            </div>
+          </div>
+          <div class="navbar">
+            <div class="nav-icon"></div><div class="nav-icon"></div><div class="nav-icon"></div><div class="nav-icon active"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SCREEN 5: SUPPORT -->
+    <div class="phone-block">
+      <div class="eyebrow"><b>05</b> — دعم بدون كلام</div>
+      <div class="phone">
+        <div class="screen">
+          <div class="notch"></div>
+          <div class="statusbar">
+            <span>٩:٤١</span>
+            <span class="icons"><span class="sb-dot"></span><span class="sb-dot"></span><span class="sb-dot"></span></span>
+          </div>
+          <div class="screen-body">
+            <div class="feed-top"><span class="logo-mini">MoBoOk</span></div>
+            <div class="support-post">
+              <div class="post-head">
+                <div class="mblob mood-sad" style="width:24px;height:24px"></div>
+                <span class="name">ريم</span>
+                <span class="time">منذ ٢٠ د</span>
+              </div>
+              <p>حسيت النهاردة إني تعبت من المحاولة وحدي. مش عايز نصيحة، بس حسيت لازم أقولها.</p>
+              <div class="support-btn">💛 إبعت دعم</div>
+              <div class="support-count">بعت إنت و ١٢ شخص تانيين دعم</div>
+            </div>
+            <div class="toast">تم إرسال الدعم 💛</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="legend">
+    <div class="legend-title">لغة الألوان</div>
+    <div class="legend-row">
+      <div class="legend-item"><span class="legend-dot" style="background:var(--joy)"></span>فرحان</div>
+      <div class="legend-item"><span class="legend-dot" style="background:var(--calm)"></span>هادي</div>
+      <div class="legend-item"><span class="legend-dot" style="background:var(--sad)"></span>زعلان</div>
+      <div class="legend-item"><span class="legend-dot" style="background:var(--anxious)"></span>قلقان</div>
+      <div class="legend-item"><span class="legend-dot" style="background:var(--fire)"></span>متعصب</div>
+    </div>
+  </div>
+
+</body>
+</html>
