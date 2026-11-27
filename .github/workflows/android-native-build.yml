@@ -1,0 +1,30 @@
+name: android-native-build
+on: workflow_dispatch
+permissions:
+  contents: read
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+      - name: Extract crate
+        run: mkdir crate && tar xzf native-build/crate.tgz -C crate
+      - name: Toolchain
+        run: |
+          rustup toolchain install stable --profile minimal
+          rustup default stable
+          rustup target add aarch64-linux-android armv7-linux-androideabi
+          rustc --version
+          cargo --version
+      - name: Linux tests (mobook_v1)
+        working-directory: crate
+        run: cargo test --locked --features mobook-journal mobook_v1 -- --test-threads=1
+      - name: Android build
+        working-directory: crate
+        run: |
+          cargo install cargo-ndk --locked
+          echo "NDK: $ANDROID_NDK_HOME"
+          cargo ndk -t arm64-v8a -t armeabi-v7a -o out build --release --locked --features mobook-journal
+          ls -la out/*
+          sha256sum out/*/*.so
