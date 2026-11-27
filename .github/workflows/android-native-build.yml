@@ -9,7 +9,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Extract crate
-        run: mkdir crate && tar xzf native-build/crate.tgz -C crate
+        run: mkdir crate && tar xzf native-build/2-crate.tgz -C crate
       - name: Toolchain
         run: |
           rustup toolchain install stable --profile minimal
